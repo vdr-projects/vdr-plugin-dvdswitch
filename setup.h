@@ -3,6 +3,8 @@
 
 #include <vdr/menuitems.h>
 
+#define memberof(x) (sizeof(x)/sizeof(*x))
+
 class cDVDSwitchSetup
 {
   public:
@@ -66,16 +68,15 @@ class cDVDSwitchSetup
     cDVDSwitchSetup(void);
     ~cDVDSwitchSetup(void);
     void Init(void);
-    bool SetupParse(const char *Name, const char *Value);
-    void Debug(void);
+    bool SetupParse(const char *Name, const char *Value, cImageList &ImageList);
 
-    void SetConfDir(char *value)
+    void SetConfDir(const char *value)
     {
-      strcpy(ConfigDirectory, value);
-      strcpy(DVDLink, ConfigDirectory);
-      strcat(DVDLink, "/dvdlink");
+      strncpy(ConfigDirectory, value, memberof(ConfigDirectory));
+      strncpy(DVDLink, ConfigDirectory, memberof(DVDLink));
+      strncat(DVDLink, "/dvdlink", memberof(DVDLink));
     }
-    void SetDVDDevice(char *value) { strcpy(DVDLinkOrg, value); }
+    void SetDVDDevice(const char *value) { strncpy(DVDLinkOrg, value, memberof(DVDLinkOrg)); }
 };
 
 class cMenuSetupDVDSwitch : public cMenuSetupPage
@@ -92,12 +93,13 @@ class cMenuSetupDVDSwitch : public cMenuSetupPage
     int ViewNavPos;
     bool ViewKey;
     int ViewKeyPos;
+    cImageList &ImageList;
   protected:
     void Set(void);
     virtual void Store(void);
     virtual eOSState ProcessKey(eKeys Key);
   public:
-    cMenuSetupDVDSwitch(void);
+    cMenuSetupDVDSwitch(cImageList &ImageList);
 };
 
 class cMenuEditCatItem : public cOsdItem

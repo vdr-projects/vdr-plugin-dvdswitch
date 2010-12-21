@@ -13,18 +13,12 @@
 #include <vdr/interface.h>
 #include <vdr/thread.h>
 
-#include "debug.h"
-
-#define OSD_ERRMSG(msg)   OsdMsg(mtError, msg)
-#define OSD_WARNMSG(msg)  OsdMsg(mtWarning, msg)
-#define OSD_INFOMSG(msg)  OsdMsg(mtInfo, msg)
-
 #define FREENULL(p) (free(p), p = NULL)
 
 void OsdMsg(eMessageType Type, const char *Msg);
 void ChangeChars(char *name, char *chars);
-void StrRepeat(char *input, int count, char *dest);
-bool RegIMatch(char *string, char *pattern);
+void StrRepeat(const char *input, int count, char *dest);
+bool RegIMatch(const char *string,const char *pattern);
 
 // --- cStringValue -------------------------------------
 
@@ -33,7 +27,7 @@ class cStringValue
   private:
     char *String;
 
-    void Init(char *string)
+    void Init(const char *string)
     {
       FREENULL(String);
       String = string ? strdup(string) : NULL;
@@ -42,12 +36,12 @@ class cStringValue
     cStringValue(void) { String = NULL; }
     ~cStringValue(void) { free(String); }
 
-    cStringValue &operator= (char *string)
+    cStringValue &operator= (const char *string)
     {
       Init(string);
       return *this;
     }
-    cStringValue &operator+= (char *string)
+    cStringValue &operator+= (const char *string)
     {
       if(String && string)
       {
@@ -61,7 +55,7 @@ class cStringValue
     }
     char *operator& (void) { return String; }
 
-    int len(void) { return String ? strlen(String) : 0; }
+    int len(void) const { return String ? strlen(String) : 0; }
 };
 
 // --- cStringList --------------------------------------
@@ -71,7 +65,7 @@ class cStringListItem : public cListObject
   private:
     char *String;
   public:
-    cStringListItem(char *string)
+    cStringListItem(const char *string)
     {
       String = string ? strdup(string) : NULL;
     }
@@ -80,7 +74,7 @@ class cStringListItem : public cListObject
     char *Value(void) { return String; }
 };
 
-class cStringList : public cList<cStringListItem> {};
+//class cStringList : public cList<cStringListItem> {};
 
 // --- cTokenizer ---------------------------------------
 
@@ -90,7 +84,6 @@ class cToken : public cListObject
     char *String;
   public:
     cToken(char *string) {
-      DEBUG("Neuer Token: %s", string);
       String = string ? strdup(string) : NULL;
     }
     ~cToken(void) { free(String); }
@@ -105,9 +98,8 @@ class cTokenizer : public cList<cToken>
 
     void Tokenize(bool trim);
   public:
-    cTokenizer(char *string, char *delim, bool trim = false)
+    cTokenizer(const char *string,const char *delim, bool trim = false)
     {
-      DEBUG("neuer Tokenizer wird initialisiert: %s, %s", string, delim);
       String = string ? strdup(string) : NULL;
       Delim = delim ? strdup(delim) : NULL;
       if(String && Delim)
@@ -115,11 +107,10 @@ class cTokenizer : public cList<cToken>
     }
     ~cTokenizer(void)
     {
-      DEBUG("Tokenizer wird gelöscht");
       free(String);
       free(Delim);
     }
-    char *GetToken(int index) { return index > 0 && index <= Count() ? Get(index - 1)->Value() : NULL; }
+    const char *GetToken(int index) const { return index > 0 && index <= Count() ? Get(index - 1)->Value() : NULL; }
 };
 
 // --- cFileInfo ----------------------------------------
@@ -141,7 +132,7 @@ class cFileInfo
     unsigned long long int size;
 
   public:
-    cFileInfo(char *file);
+    cFileInfo(const char *file);
     ~cFileInfo(void);
 
     char *Path(void);
@@ -164,10 +155,10 @@ class cFileInfo
 class cFileCMD
 {
   public:
-    static bool Del(char *file);
-    static bool Mkdir(char *dir) { return MakeDirs(dir, true); }
-    static bool Rn(char *oldfile, char *newfile) { return !rename(oldfile, newfile); }
-    static bool DirIsEmpty(char *file);
+    static bool Del(const char *file);
+    static bool Mkdir(const char *dir) { return MakeDirs(dir, true); }
+    static bool Rn(const char *oldfile, const char *newfile) { return !rename(oldfile, newfile); }
+    static bool DirIsEmpty(const char *file);
 };
 
 // --- cFileList -------------------------------
@@ -185,7 +176,7 @@ class cFileOptListItem : public cListObject
     char *RegEx;
     eFileInfo Type;
   public:
-    cFileOptListItem(char *regex, eFileInfo type = tNone)
+    cFileOptListItem(const char *regex, eFileInfo type = tNone)
     {
       RegEx = (regex && !isempty(regex)) ? strdup(regex) : NULL;
       Type = type;
@@ -206,8 +197,8 @@ class cFileListItem : public cListObject
   private:
     char *File;
   public:
-    cFileListItem(char *dir, char *file);
-    cFileListItem(char *file);
+    cFileListItem(const char *dir, const char *file);
+    cFileListItem(const char *file);
     ~cFileListItem(void) { free(File); }
     char *Value(void) { return File; }
 };
@@ -226,18 +217,18 @@ class cFileList : public cList<cFileListItem>
     bool SortToFilename;
     eFileInfo Type;
 
-    bool Read(char *dir, bool withsub);
-    void SortIn(char *dir, char *file);
+    bool Read(const char *dir, bool withsub);
+    void SortIn(const char *dir, const char *file);
 
-    bool CheckIncludes(char *dir, char *file);
-    bool CheckExcludes(char *dir, char *file);
-    bool CheckType(char *dir, char *file, eFileInfo type);
+    bool CheckIncludes(const char *dir, const char *file);
+    bool CheckExcludes(const char *dir, const char *file);
+    bool CheckType(const char *dir, const char *file, eFileInfo type);
   public:
     cFileList(void);
     ~cFileList(void);
 
-    bool Load(char *dir = NULL, bool withsub = false);
-    void OptInclude(char *include, eFileInfo type = tNone)
+    bool Load(const char *dir = NULL, bool withsub = false);
+    void OptInclude(const char *include, eFileInfo type = tNone)
     {
       if(!Includes)
         Includes = new cFileOptList();
@@ -246,7 +237,7 @@ class cFileList : public cList<cFileListItem>
       else
         Includes->Add(new cFileOptListItem(include, type));
     }
-    void OptExclude(char *exclude,  eFileInfo type = tNone)
+    void OptExclude(const char *exclude,  eFileInfo type = tNone)
     {
       if(!Excludes)
         Excludes = new cFileOptList();
@@ -263,8 +254,8 @@ class cFileList : public cList<cFileListItem>
     void OptFilterType(eFileInfo type) { Type = type; }
 
     bool DirIsEmpty(cFileListItem *item);
-    static bool DirIsIn(char *file, char *strings);
-    static bool DirIsIn(cFileListItem *item, char *strings) { return DirIsIn(item->Value(), strings); }
+    static bool DirIsIn(const char *file, const char *strings);
+    static bool DirIsIn(cFileListItem *item, const char *strings) { return DirIsIn(item->Value(), strings); }
 };
 
 #endif // __HELPERS_DVDSWITCH_H

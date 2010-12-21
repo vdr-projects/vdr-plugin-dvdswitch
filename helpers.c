@@ -40,13 +40,13 @@ void ChangeChars(char *name, char *chars)
   }
 }
 
-void StrRepeat(char *input, int count, char *dest)
+void StrRepeat(const char *input, int count, char *dest)
 {
   for(int i = 0; i < count; i++)
     strcat(dest, input);
 }
 
-bool RegIMatch(char *string, char *pattern)
+bool RegIMatch(const char *string, const char *pattern)
 {
   if(!string || !pattern)
     return false;
@@ -70,7 +70,7 @@ bool RegIMatch(char *string, char *pattern)
 void cTokenizer::Tokenize(bool trim)
 {
   Clear();
-  DEBUG("String wird in Token zerlegt");
+  dsyslog("String wird in Token zerlegt");
   char *buffer = NULL;
   char *token = NULL;
   char *tok_pointer;
@@ -83,7 +83,7 @@ void cTokenizer::Tokenize(bool trim)
       token;
       token = strtok_r(NULL, Delim, &tok_pointer))
   {
-    DEBUG("Token gefunden: %s", token);
+    dsyslog("Token gefunden: %s", token);
     if(!trim)
       Add(new cToken(token));
     else
@@ -95,9 +95,9 @@ void cTokenizer::Tokenize(bool trim)
 
 // --- cFileInfo ---------------------------------------------
 
-cFileInfo::cFileInfo(char *file)
+cFileInfo::cFileInfo(const char *file)
 {
-  DEBUG("FileInfo: %s", file);
+  dsyslog("FileInfo: %s", file);
   File = (file && !isempty(file)) ? strdup(file) : NULL;
 
   if(File && File[strlen(File) - 1] == '/')
@@ -129,7 +129,7 @@ char *cFileInfo::Path(void)
     strn0cpy(buffer, File, len);
   }
 
-  DEBUG("FileInfo: Pfad: %s", buffer);
+  dsyslog("FileInfo: Pfad: %s", buffer);
 
   return buffer;
 }
@@ -145,7 +145,7 @@ char *cFileInfo::FileName(void)
     buffer = strdup(p);
   }
 
-  DEBUG("FileInfo: FileName: %s", buffer);
+  dsyslog("FileInfo: FileName: %s", buffer);
 
   return buffer;
 
@@ -175,7 +175,7 @@ char *cFileInfo::FileNameWithoutExt(void)
   free(ext);
   free(filename);
 
-  DEBUG("FileInfo: FileNameWithoutExt: %s", buffer);
+  dsyslog("FileInfo: FileNameWithoutExt: %s", buffer);
 
   return buffer;
 }
@@ -193,7 +193,7 @@ char *cFileInfo::Extension(bool withPoint)
       buffer = strdup(p);
   }
 
-  DEBUG("FileInfo: Extension: %s", buffer);
+  dsyslog("FileInfo: Extension: %s", buffer);
   
   return buffer;
 }
@@ -364,7 +364,7 @@ bool cFileInfo::isExists(void)
 
 // --- cFileCMD -------------------------------------------------
 
-bool cFileCMD::Del(char *file)
+bool cFileCMD::Del(const char *file)
 {
   cFileInfo *info = new cFileInfo(file);
   cFileList *list = NULL;
@@ -406,7 +406,7 @@ bool cFileCMD::Del(char *file)
   return ret;
 }
 
-bool cFileCMD::DirIsEmpty(char *file)
+bool cFileCMD::DirIsEmpty(const char *file)
 {
   bool ret = false;
 
@@ -420,7 +420,7 @@ bool cFileCMD::DirIsEmpty(char *file)
 
 // --- cFileList -------------------------------
 
-cFileListItem::cFileListItem(char *dir, char *file)
+cFileListItem::cFileListItem(const char *dir, const char *file)
 {
   if(file && !isempty(file) && dir && !isempty(dir))
   {
@@ -436,7 +436,7 @@ cFileListItem::cFileListItem(char *dir, char *file)
     File[strlen(File) - 1] = '\0';
 }
 
-cFileListItem::cFileListItem(char *file)
+cFileListItem::cFileListItem(const char *file)
 {
   File = file ? strdup(file) : NULL;
 
@@ -470,7 +470,7 @@ cFileList::~cFileList(void)
   }
 }
 
-bool cFileList::Load(char *dir, bool withsub)
+bool cFileList::Load(const char *dir, bool withsub)
 {
   if(dir && isempty(dir))
     return false;
@@ -494,7 +494,7 @@ bool cFileList::Load(char *dir, bool withsub)
   return Read(Dir, Sub);
 }
 
-bool cFileList::Read(char *dir, bool withsub)
+bool cFileList::Read(const char *dir, bool withsub)
 {
   bool ret = false;
   char *buffer = NULL;
@@ -525,7 +525,7 @@ bool cFileList::Read(char *dir, bool withsub)
   return ret;
 }
 
-void cFileList::SortIn(char *dir, char *file)
+void cFileList::SortIn(const char *dir, const char *file)
 {
   cFileListItem *Item = First();
   cFileInfo *ItemInfo = NULL;
@@ -575,7 +575,7 @@ void cFileList::SortIn(char *dir, char *file)
   free(NewItem);
 }
 
-bool cFileList::CheckIncludes(char *dir, char *file)
+bool cFileList::CheckIncludes(const char *dir, const char *file)
 {
   if(!Includes)
     return true;
@@ -592,7 +592,7 @@ bool cFileList::CheckIncludes(char *dir, char *file)
   return false;
 }
 
-bool cFileList::CheckExcludes(char *dir, char *file)
+bool cFileList::CheckExcludes(const char *dir, const char *file)
 {
   if(!Excludes)
     return false;
@@ -609,7 +609,7 @@ bool cFileList::CheckExcludes(char *dir, char *file)
   return false;
 }
 
-bool cFileList::CheckType(char *dir, char *file, eFileInfo type)
+bool cFileList::CheckType(const char *dir, const char *file, eFileInfo type)
 {
   if(type == tNone)
     return true;
@@ -656,7 +656,7 @@ bool cFileList::DirIsEmpty(cFileListItem *item)
   return ret;
 }
 
-bool cFileList::DirIsIn(char *file, char *strings)
+bool cFileList::DirIsIn(const char *file, const char *strings)
 {
   bool ret = false;
 

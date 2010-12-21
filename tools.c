@@ -1,8 +1,9 @@
-#include "tools.h"
+
 #include "imagelist.h"
+#include "tools.h"
 #include "setup.h"
 
-cDirList::cDirList(void)
+cDirList::cDirList(cImageList &ImageList)
 {
   char *buffer = NULL;
 

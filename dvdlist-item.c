@@ -5,7 +5,6 @@
 
 cDVDListItem::cDVDListItem(char* file)
 {
-  DEBUG("Neues DVDItem -> %s", file);
   File = file ? strdup(file) : NULL;
 }
 

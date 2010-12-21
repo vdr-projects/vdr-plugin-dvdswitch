@@ -6,7 +6,7 @@
 class cDirList : public cFileList
 {
   public:
-    cDirList(void);
+    cDirList(cImageList &ImageList);
 };
 
 class cFileDelThread : public cThread
@@ -15,7 +15,7 @@ class cFileDelThread : public cThread
     char *File;
     bool Ok;
 
-    bool RightCheck(char *value)
+    bool RightCheck(const char *value)
     {
       bool ret = false;
       if(value)
@@ -34,13 +34,13 @@ class cFileDelThread : public cThread
       delete(this);
     };
   public:
-    cFileDelThread(char *file)
+    cFileDelThread(const char *file)
     {
       File = NULL;
       Ok = false;
       
       if(!RightCheck(file))
-        OSD_ERRMSG(tr("no Rights to delete"));
+        OsdMsg(mtError,tr("no Rights to delete"));
       else
       {
         Ok = true;
@@ -63,7 +63,7 @@ class cFileMoveThread : public cThread
     char *Dest;
     bool Ok;
 
-    bool RightCheck(char *value)
+    bool RightCheck(const char *value)
     {
       bool ret = false;
       if(value)
@@ -87,7 +87,7 @@ class cFileMoveThread : public cThread
       delete(this);
     };
   public:
-    cFileMoveThread(char *file, char *dest)
+    cFileMoveThread(const char *file, char *dest)
     {
       FileName = NULL;
       File = NULL;
@@ -95,7 +95,7 @@ class cFileMoveThread : public cThread
       Ok = false;
 
       if(!RightCheck(file) || !RightCheck(dest))
-        OSD_ERRMSG(tr("no Rights to move"));
+        OsdMsg(mtError,tr("no Rights to move"));
       else
       {
         Ok = true;

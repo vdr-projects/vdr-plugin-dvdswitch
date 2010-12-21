@@ -1,5 +1,4 @@
 #include <vdr/tools.h>
-#include <vdr/i18n.h>
 #include "dvdlist-item.h"
 #include "helpers.h"
 
@@ -9,7 +8,7 @@ class cDVDList : public cList<cDVDListItem>
     char *DVDExts;
     char *DVDDirs;
 
-    bool Load(char *dir, eFileList smode, bool sub);
+    bool Load(const char *dir, eFileList smode, bool sub);
   public:
     cDVDList(void)
     {
@@ -21,8 +20,7 @@ class cDVDList : public cList<cDVDListItem>
       free(DVDExts);
       free(DVDDirs);
     }
-    //bool Create(char *dir, DVDType dtype = dtAll, DLSortMode smode = dlAsc, bool subdirs = false);
-    bool Create(char *dir, char *exts, char *dirs, eFileList smode = sNone, bool sub = false);
+    bool Create(const char *dir, const char *exts, const char *dirs, eFileList smode = sNone, bool sub = false);
     
 };
 

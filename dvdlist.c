@@ -1,14 +1,10 @@
-#include <vdr/tools.h>
 #include "dvdlist.h"
-#include "setup.h"
-#include "helpers.h"
-#include "imagelist.h"
 
 // --- cDVDList ------------------------------------------------------------------
 
-bool cDVDList::Create(char *dir, char *exts, char *dirs, eFileList smode, bool sub)
+bool cDVDList::Create(const char *dir, const char *exts, const char *dirs, eFileList smode, bool sub)
 {
-  DEBUG("DVDList: %s, %s", exts, dirs);
+  dsyslog("DVDList: %s, %s", exts, dirs);
 
   Clear();
   FREENULL(DVDExts);
@@ -23,9 +19,9 @@ bool cDVDList::Create(char *dir, char *exts, char *dirs, eFileList smode, bool s
   return Load(dir, smode, sub);
 }
 
-bool cDVDList::Load(char *dir, eFileList smode, bool sub)
+bool cDVDList::Load(const char *dir, eFileList smode, bool sub)
 {
-  DEBUG("DVDList: Load");
+  dsyslog("DVDList: Load");
   bool ret = false;
   int i = 0;
 
@@ -61,8 +57,8 @@ bool cDVDList::Load(char *dir, eFileList smode, bool sub)
   while(fItem)
   {
     fInfo = new cFileInfo(fItem->Value());
-    if(fInfo->Type() == tFile ||
-       fInfo->Type() == tDir && fList->DirIsIn(fItem, DVDDirs))
+    if((fInfo->Type() == tFile) ||
+       (fInfo->Type() == tDir && fList->DirIsIn(fItem, DVDDirs)))
       Add(new cDVDListItem(fItem->Value()));
     DELETENULL(fInfo);
     fItem = fList->Next(fItem);

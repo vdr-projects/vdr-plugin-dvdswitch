@@ -1,6 +1,6 @@
+#include "imagelist.h"
 #include "setup.h"
 #include "menu.h"
-#include "i18n.h"
 #include "dvdplugin.h"
 #include "setup-itypes.h"
 
@@ -11,9 +11,9 @@ cDVDSwitchSetup DVDSwitchSetup;
 cDVDSwitchSetup::cDVDSwitchSetup(void)
 {
   HideMenuEntry = 0;
-  strcpy(MenuName, "DVDSwitch");
+  strncpy(MenuName, "DVDSwitch", memberof(MenuName));
   CustomMenuName = false;
-  strcpy(ImageDir, "/video/dvd");
+  strncpy(ImageDir, "/video/dvd", memberof(ImageDir));
   ImageDirPerParam = false;
   ViewFreeDiskSpace = 1;
 
@@ -30,8 +30,8 @@ cDVDSwitchSetup::cDVDSwitchSetup(void)
   CatLineChar = CatLineChars[0];
   CharCountBeforeCat = 3;
   SpacesBeforeAfterCat = 1;
-  strcpy(SubCatCutter, ">");
-  strcpy(ChangeCharsOSDName, "_ +&");
+  strncpy(SubCatCutter, ">",memberof(SubCatCutter));
+  strncpy(ChangeCharsOSDName, "_ +&",memberof(ChangeCharsOSDName));
 
   JumpCatByKey = 0;
 
@@ -52,8 +52,8 @@ cDVDSwitchSetup::cDVDSwitchSetup(void)
   kOk = 4;
 
   DVDPluginExist = false;
-  strcpy(DVDReadScript, "/usr/local/bin/dvdswitch_readdvd.sh");
-  strcpy(DVDWriteScript, "/usr/local/bin/dvdswitch_writedvd.sh");
+  strncpy(DVDReadScript, "/usr/local/bin/dvdswitch_readdvd.sh",memberof(DVDReadScript));
+  strncpy(DVDWriteScript, "/usr/local/bin/dvdswitch_writedvd.sh",memberof(DVDWriteScript));
 }
 
 cDVDSwitchSetup::~ cDVDSwitchSetup(void)
@@ -63,7 +63,7 @@ cDVDSwitchSetup::~ cDVDSwitchSetup(void)
 void cDVDSwitchSetup::Init(void)
 {
   if (!CustomMenuName)
-    strcpy(MenuName, tr(MenuName));
+    strncpy(MenuName, tr(MenuName),memberof(MenuName));
 
   MaxDModes = 3;
   DModes[0] = tr("All Images");
@@ -104,11 +104,9 @@ void cDVDSwitchSetup::Init(void)
   CommandsShortName[8] = tr("Burn");
   CommandsShortName[9] = tr("Create");
   CommandsShortName[10] = tr("Commands");
-
-  Debug();
 }
 
-bool cDVDSwitchSetup::SetupParse(const char *Name, const char *Value)
+bool cDVDSwitchSetup::SetupParse(const char *Name, const char *Value, cImageList &ImageList)
 {
   if (!strcasecmp(Name, "HideMenuEntry")) HideMenuEntry = atoi(Value);
   if (!strcasecmp(Name, "MenuName"))
@@ -116,8 +114,8 @@ bool cDVDSwitchSetup::SetupParse(const char *Name, const char *Value)
     strn0cpy(MenuName, Value, 50);
     CustomMenuName = true;
   }
-  if (!strcasecmp(Name, "ImageDir") && !ImageDirPerParam) strn0cpy(ImageDir, Value, MaxFileName);
-  if (!strcasecmp(Name, "ImageTypes")) ImageList.AddSetup((char*)Value);
+  if (!strcasecmp(Name, "ImageDir") && !ImageDirPerParam) strn0cpy(ImageDir, Value, memberof(ImageDir));
+  if (!strcasecmp(Name, "ImageTypes")) ImageList.AddSetup(Value);
   if (!strcasecmp(Name, "ViewFreeDiskSpace")) ViewFreeDiskSpace = atoi(Value);
 
   if (!strcasecmp(Name, "DisplayMode")) DisplayMode = atoi(Value);
@@ -139,8 +137,8 @@ bool cDVDSwitchSetup::SetupParse(const char *Name, const char *Value)
   }
   if (!strcasecmp(Name, "CharCountBeforeCat")) CharCountBeforeCat = atoi(Value);
   if (!strcasecmp(Name, "SpacesBeforeAfterCat")) SpacesBeforeAfterCat = atoi(Value);
-  if (!strcasecmp(Name, "SubCatCutter")) strn0cpy(SubCatCutter, Value, 7);
-  if (!strcasecmp(Name, "ChangeCharsOSDName")) strn0cpy(ChangeCharsOSDName, Value, 20);
+  if (!strcasecmp(Name, "SubCatCutter")) strn0cpy(SubCatCutter, Value, memberof(SubCatCutter));
+  if (!strcasecmp(Name, "ChangeCharsOSDName")) strn0cpy(ChangeCharsOSDName, Value, memberof(ChangeCharsOSDName));
 
   if (!strcasecmp(Name, "JumpCatByKey")) JumpCatByKey = atoi(Value);
 
@@ -163,58 +161,10 @@ bool cDVDSwitchSetup::SetupParse(const char *Name, const char *Value)
   return true;
 }
 
-void cDVDSwitchSetup::Debug(void)
-{
-  DEBUG("SetupParameter:");
-  DEBUG("  HideMenuEntry: %i", HideMenuEntry);
-  DEBUG("  MenuName: %s", MenuName);
-  DEBUG("  ImageDir: %s", ImageDir);
-  DEBUG("  ImageDirPerParam: %s", ImageDirPerParam ? "TRUE" : "FALSE");
-  DEBUG("  ViewFreeDiskSpace: %s", ViewFreeDiskSpace ? "TRUE" : "FALSE");
-
-  DEBUG("  DisplayMode: %i", DisplayMode);
-  DEBUG("  CategorieType: %i", CategorieType);
-  DEBUG("  HideEmptyDirs: %i", HideEmptyDirs);
-  DEBUG("  SortMode: %i", SortMode);
-  DEBUG("  DisplayDVDDevice: %s", DisplayDVDDevice ? "TRUE" : "FALSE");
-
-  //DEBUG("  ISOFirst: %i", ISOFirst);
-  DEBUG("  HideTypeCol: %i", HideTypeCol);
-  DEBUG("  CountTypCol: %i", CountTypCol);
-  DEBUG("  HideImgSizeCol: %i", HideImgSizeCol);
-  DEBUG("  CatLineChar, %i", CatLineChar);
-  DEBUG("  CharCountBeforeCat: %i", CharCountBeforeCat);
-  DEBUG("  SpacesBeforeAfterCat: %i", SpacesBeforeAfterCat);
-  DEBUG("  SubCatCutter: %s", SubCatCutter);
-  DEBUG("  ChangeCharsOSDName: %s", ChangeCharsOSDName);
-
-  DEBUG("  JumpCatByKey: %i", JumpCatByKey);
-
-  DEBUG("  DVDLink: %s", DVDLink);
-  DEBUG("  DVDLinkOrg: %s", DVDLinkOrg);
-  DEBUG("  DVDReadScript: %s", DVDReadScript);
-  DEBUG("  DVDWriteScript: %s", DVDWriteScript);
-
-  DEBUG("  k1: %i", k1);
-  DEBUG("  k2: %i", k2);
-  DEBUG("  k3: %i", k3);
-  DEBUG("  k4: %i", k4);
-  DEBUG("  k5: %i", k5);
-  DEBUG("  k6: %i", k6);
-  DEBUG("  k7: %i", k7);
-  DEBUG("  k8: %i", k8);
-  DEBUG("  k9: %i", k9);
-  DEBUG("  k0: %i", k0);
-  DEBUG("  kRed: %i", kRed);
-  DEBUG("  kGreen: %i", kGreen);
-  DEBUG("  kYellow: %i", kYellow);
-  DEBUG("  kBlue: %i", kBlue);
-  DEBUG("  kOk: %i", kOk);
-}
-
 // --- cMenuSetupDVDSwitch -------------------------------------------
 
-cMenuSetupDVDSwitch::cMenuSetupDVDSwitch(void)
+cMenuSetupDVDSwitch::cMenuSetupDVDSwitch(cImageList &imagelist)
+    : ImageList(imagelist)
 {
   data = DVDSwitchSetup;
 
@@ -435,7 +385,7 @@ eOSState cMenuSetupDVDSwitch::ProcessKey(eKeys Key)
         break;
       case kBlue:
         if(strstr(ItemText, tr("\tImagetypes")) == ItemText)
-          return AddSubMenu(new cMenuSetupDSITypes());
+          return AddSubMenu(new cMenuSetupDSITypes(ImageList));
         break;
       default:
         state = cMenuSetupPage::ProcessKey(Key);
@@ -450,9 +400,8 @@ eOSState cMenuSetupDVDSwitch::ProcessKey(eKeys Key)
 
 void cMenuSetupDVDSwitch::Store(void)
 {
-  DEBUG("STORE Setup");
+  dsyslog("STORE Setup");
 
-  DEBUG("SWITCH data");
   DVDSwitchSetup = data;
 
   SetupStore("HideMenuEntry",           DVDSwitchSetup.HideMenuEntry);
@@ -493,8 +442,6 @@ void cMenuSetupDVDSwitch::Store(void)
   SetupStore("kYellow",                 DVDSwitchSetup.kYellow);
   SetupStore("kBlue",                   DVDSwitchSetup.kBlue);
   SetupStore("kOk",                     DVDSwitchSetup.kOk);
-
-  DVDSwitchSetup.Debug();
 }
 
 // --- cMenuEditCatItem ------------------------------------------------------
@@ -503,11 +450,11 @@ cMenuEditCatItem::cMenuEditCatItem(const char *name, bool view)
 {
   Name = (char*) malloc(120);
   if(view)
-    strcpy(Name, "-\t");
+    strncpy(Name, "-\t", 119);
   else
-    strcpy(Name, "+\t");
-  strcat(Name, name);
-  //strcat(Name, " ");
+    strncpy(Name, "+\t", 119);
+  strncat(Name, name, 119);
+  //strncat(Name, " ", memberof(Name));
   //StrRepeat("_", (119 - strlen(Name)), Name);
   SetText(Name);
 }

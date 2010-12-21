@@ -1,17 +1,18 @@
 #include <vdr/plugin.h>
+#include "imagelist.h"
 #include "menu.h"
 #include "tools.h"
 #include "setup.h"
 #include "dvdplugin.h"
 #include "commands.h"
-#include "imagelist.h"
 
 cDirHandlingOpt MainMenuOptions;
 
 // --- cMainMenu ------------------------------------------------------------------------
 
-cMainMenu::cMainMenu(void)
+cMainMenu::cMainMenu(cImageList &imagelist)
   : cOsdMenu(DVDSwitchSetup.MenuName, DVDSwitchSetup.CountTypCol, 10)
+  , ImageList(imagelist)
 {
   FirstSelectable = -1;
   CMDImg = NULL;
@@ -57,9 +58,9 @@ void cMainMenu::SetMenuTitle(void)
   free(title);
 }
 
-void cMainMenu::Build(char *dir)
+void cMainMenu::Build(const char *dir)
 {
-  DEBUG("Build MainMenu von %s", dir);
+  dsyslog("Build MainMenu von %s", dir);
 
   SetMenuTitle();
   if(!DVDSwitchSetup.HideImgSizeCol)
@@ -84,7 +85,7 @@ void cMainMenu::Build(char *dir)
       break;
   }
 
-  DEBUG("First Selectable ist: %i", FirstSelectable);
+  dsyslog("First Selectable ist: %i", FirstSelectable);
 
   if(FirstSelectable >= 0)
   {
@@ -98,17 +99,17 @@ void cMainMenu::Build(char *dir)
   SetHelp();
 }
 
-void cMainMenu::BuildDisp0(char *dir)
+void cMainMenu::BuildDisp0(const char *dir)
 {
-  DEBUG("Bilde Menu nach DisplayMode 0");
+  dsyslog("Bilde Menu nach DisplayMode 0");
 
   cDVDList *DVDList = new cDVDList;
   cMainMenuItem *mItem = NULL;
 
   if(DVDSwitchSetup.DisplayDVDDevice)
   {
-    DEBUG("Füge Eintrag für das DVD-Device hinzu");
-    Add(new cMainMenuItem(iDevice));
+    dsyslog("Füge Eintrag für das DVD-Device hinzu");
+    Add(new cMainMenuItem(iDevice,ImageList));
     if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
       FirstSelectable = 0;
   }
@@ -119,11 +120,11 @@ void cMainMenu::BuildDisp0(char *dir)
                      (eFileList)DVDSwitchSetup.SortMode,
                      true))
   {
-    DEBUG("DVDList erstellt");
+    dsyslog("DVDList erstellt");
     cDVDListItem *item = DVDList->First();
     while(item)
     {
-      Add(new cMainMenuItem(iDVD, item->FileName()));
+      Add(new cMainMenuItem(iDVD, ImageList, item->FileName()));
       if(MainMenuOptions.getLastSelectItemName() &&
          !strcasecmp(item->FileName(), MainMenuOptions.getLastSelectItemName()))
       {
@@ -141,7 +142,7 @@ void cMainMenu::BuildDisp0(char *dir)
   delete(DVDList);
 }
 
-void cMainMenu::BuildDisp1(char *dir)
+void cMainMenu::BuildDisp1(const char *dir)
 {
   cImageListItem *iItem = NULL;
   cDVDList *DVDList = new cDVDList;
@@ -155,9 +156,9 @@ void cMainMenu::BuildDisp1(char *dir)
     case 0: // Image-Type
       if(DVDSwitchSetup.DisplayDVDDevice)
       {
-        DEBUG("Füge Eintrag für das DVD-Device hinzu");
-        Add(new cMainMenuItem(iCat, dir));
-        Add(new cMainMenuItem(iDevice));
+        dsyslog("Füge Eintrag für das DVD-Device hinzu");
+        Add(new cMainMenuItem(iCat, ImageList, dir));
+        Add(new cMainMenuItem(iDevice, ImageList));
         if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
           FirstSelectable = 1;
       }
@@ -171,11 +172,11 @@ void cMainMenu::BuildDisp1(char *dir)
                            true) &&
            (DVDList->Count() || !DVDSwitchSetup.HideEmptyDirs))
         {
-          Add(new cMainMenuItem(iCat, iItem->GetSName()));
+          Add(new cMainMenuItem(iCat, ImageList, iItem->GetSName()));
           dItem = DVDList->First();
           while(dItem)
           {
-            Add(new cMainMenuItem(iDVD, dItem->FileName()));
+            Add(new cMainMenuItem(iDVD, ImageList, dItem->FileName()));
             if(MainMenuOptions.getLastSelectItemName() &&
                !strcasecmp(dItem->FileName(), MainMenuOptions.getLastSelectItemName()))
             {
@@ -197,18 +198,18 @@ void cMainMenu::BuildDisp1(char *dir)
                          false) &&
          (DVDList->Count() || !DVDSwitchSetup.HideEmptyDirs || DVDSwitchSetup.DisplayDVDDevice))
       {
-        Add(new cMainMenuItem(iCat, dir));
+        Add(new cMainMenuItem(iCat, ImageList, dir));
         if(DVDSwitchSetup.DisplayDVDDevice)
         {
-          DEBUG("Füge Eintrag für das DVD-Device hinzu");
-          Add(new cMainMenuItem(iDevice));
+          dsyslog("Füge Eintrag für das DVD-Device hinzu");
+          Add(new cMainMenuItem(iDevice, ImageList));
           if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
             FirstSelectable = 1;
         }
         dItem = DVDList->First();
         while(dItem)
         {
-          Add(new cMainMenuItem(iDVD, dItem->FileName()));
+          Add(new cMainMenuItem(iDVD, ImageList, dItem->FileName()));
           if(MainMenuOptions.getLastSelectItemName() &&
              !strcasecmp(dItem->FileName(), MainMenuOptions.getLastSelectItemName()))
           {
@@ -219,7 +220,7 @@ void cMainMenu::BuildDisp1(char *dir)
           dItem = DVDList->Next(dItem);
         }
       }
-      DirList = new cDirList();
+      DirList = new cDirList(ImageList);
       if(DirList->Load(dir, true))
       {
         fItem = DirList->First();
@@ -233,11 +234,11 @@ void cMainMenu::BuildDisp1(char *dir)
                              false) &&
              (DVDList->Count() || !DVDSwitchSetup.HideEmptyDirs))
           {
-            Add(new cMainMenuItem(iCat, fItem->Value()));
+            Add(new cMainMenuItem(iCat, ImageList, fItem->Value()));
             dItem = DVDList->First();
             while(dItem)
             {
-              Add(new cMainMenuItem(iDVD, dItem->FileName()));
+              Add(new cMainMenuItem(iDVD, ImageList, dItem->FileName()));
               if(MainMenuOptions.getLastSelectItemName() &&
                  !strcasecmp(dItem->FileName(), MainMenuOptions.getLastSelectItemName()))
               {
@@ -256,9 +257,9 @@ void cMainMenu::BuildDisp1(char *dir)
     case 2: // FileType
       if(DVDSwitchSetup.DisplayDVDDevice)
       {
-        DEBUG("Füge Eintrag für das DVD-Device hinzu");
-        Add(new cMainMenuItem(iCat, dir));
-        Add(new cMainMenuItem(iDevice));
+        dsyslog("Füge Eintrag für das DVD-Device hinzu");
+        Add(new cMainMenuItem(iCat, ImageList, dir));
+        Add(new cMainMenuItem(iDevice, ImageList));
         if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
           FirstSelectable = 1;
       }
@@ -269,11 +270,11 @@ void cMainMenu::BuildDisp1(char *dir)
          true) &&
          (DVDList->Count() || !DVDSwitchSetup.HideEmptyDirs))
       {
-        Add(new cMainMenuItem(iCat, (char*)tr("Image-File")));
+        Add(new cMainMenuItem(iCat, ImageList, tr("Image-File")));
         dItem = DVDList->First();
         while(dItem)
         {
-          Add(new cMainMenuItem(iDVD, dItem->FileName()));
+          Add(new cMainMenuItem(iDVD, ImageList, dItem->FileName()));
           if(MainMenuOptions.getLastSelectItemName() &&
              !strcasecmp(dItem->FileName(), MainMenuOptions.getLastSelectItemName()))
           {
@@ -291,11 +292,11 @@ void cMainMenu::BuildDisp1(char *dir)
          true) &&
          (DVDList->Count() || !DVDSwitchSetup.HideEmptyDirs))
       {
-        Add(new cMainMenuItem(iCat, (char*)tr("Image-Directory")));
+        Add(new cMainMenuItem(iCat, ImageList, tr("Image-Directory")));
         dItem = DVDList->First();
         while(dItem)
         {
-          Add(new cMainMenuItem(iDVD, dItem->FileName()));
+          Add(new cMainMenuItem(iDVD, ImageList, dItem->FileName()));
           if(MainMenuOptions.getLastSelectItemName() &&
              !strcasecmp(dItem->FileName(), MainMenuOptions.getLastSelectItemName()))
           {
@@ -311,7 +312,7 @@ void cMainMenu::BuildDisp1(char *dir)
       break;
   }
 
-  DEBUG("Ermittle FirstSelectable");
+  dsyslog("Ermittle FirstSelectable");
   mItem = (cMainMenuItem*)First();
   if(mItem && FirstSelectable < 0)
   {
@@ -325,20 +326,20 @@ void cMainMenu::BuildDisp1(char *dir)
   delete(DirList);
 }
 
-void cMainMenu::BuildDisp2(char *dir)
+void cMainMenu::BuildDisp2(const char *dir)
 {
   cMainMenuItem *mItem = NULL;
   cDVDList *DVDList = new cDVDList;
   cDVDListItem *dItem = NULL;
 
   cDirHandling *DirHand = new cDirHandling(this, &MainMenuOptions);
-  FirstSelectable = DirHand->Build(dir, !DVDSwitchSetup.HideEmptyDirs);
+  FirstSelectable = DirHand->Build(dir, !DVDSwitchSetup.HideEmptyDirs, ImageList);
   delete(DirHand);
 
   if(DVDSwitchSetup.DisplayDVDDevice && !strcasecmp(dir, MainMenuOptions.ImageDir()))
   {
-    DEBUG("Füge Eintrag für das DVD-Device hinzu");
-    Add(new cMainMenuItem(iDevice));
+    dsyslog("Füge Eintrag für das DVD-Device hinzu");
+    Add(new cMainMenuItem(iDevice, ImageList));
     if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
     {
       mItem = (cMainMenuItem*)Last();
@@ -355,7 +356,7 @@ void cMainMenu::BuildDisp2(char *dir)
     dItem = DVDList->First();
     while(dItem)
     {
-      Add(new cMainMenuItem(iDVD, dItem->FileName()));
+      Add(new cMainMenuItem(iDVD, ImageList, dItem->FileName()));
       if(MainMenuOptions.getLastSelectItemName() &&
          !strcasecmp(dItem->FileName(), MainMenuOptions.getLastSelectItemName()))
       {
@@ -547,7 +548,7 @@ eOSState cMainMenu::ProcessKey(eKeys Key)
                   MainMenuOptions.setLastSelectItemName(buffer);
               }
               else
-                OSD_WARNMSG(tr("File exists in Directory"));
+                OsdMsg(mtWarning,tr("File exists in Directory"));
               FREENULL(buffer);
               FREENULL(buffer2);
               DELETENULL(info);
@@ -777,7 +778,7 @@ eOSState cMainMenu::SelectItem(void)
         if(!info->isExecutable() || !info->isReadable())
         {
           DELETENULL(info);
-          OSD_ERRMSG(tr("no Rights!"));
+          OsdMsg(mtError,tr("No rights to change inside this directory!"));
           return osContinue;
           break;
         }
@@ -861,7 +862,7 @@ eOSState cMainMenu::Commands(eKeys Key)
     switch(cmd)
     {
       case cmdDirManage:
-        return AddSubMenu(new cCMDDir(this));
+        return AddSubMenu(new cCMDDir(ImageList, this));
         break;
       case cmdDVDopen:
         return cCMD::Eject(false);
@@ -881,7 +882,7 @@ eOSState cMainMenu::Commands(eKeys Key)
         }
         break;
       case cmdImgMove:
-        return AddSubMenu(new cCMDMove(mItem->FileName(), this, false, true));
+        return AddSubMenu(new cCMDMove(ImageList, mItem->FileName(), this, false, true));
         break;
       case cmdImgDelete:
         if(mItem && mItem->Type() == iDVD)
@@ -902,10 +903,10 @@ eOSState cMainMenu::Commands(eKeys Key)
         }
         break;
       case cmdImgRead:
-        return AddSubMenu(new cCMDImageRead());
+        return AddSubMenu(new cCMDImageRead(ImageList));
         break;
       case cmdCommands:
-        return AddSubMenu(new cCMDMenu(mItem, this));
+        return AddSubMenu(new cCMDMenu(ImageList, mItem, this));
       default:
         break;
     }
@@ -914,7 +915,7 @@ eOSState cMainMenu::Commands(eKeys Key)
   return cOsdMenu::ProcessKey(Key);
 }
 
-char *cMainMenu::CreateOSDName(eMainMenuItem itype, char *file)
+char *cMainMenu::CreateOSDName(eMainMenuItem itype, cImageList &ImageList, const char *file)
 {
   cStringValue buffer;
   cStringValue tmpOSD;
@@ -931,16 +932,18 @@ char *cMainMenu::CreateOSDName(eMainMenuItem itype, char *file)
         buffer = file;
       else
       {
-        char *p = &file[strlen(MainMenuOptions.ImageDir())];
+        const char *p = &file[strlen(MainMenuOptions.ImageDir())];
         if(p[0] == '/')
           p++;
         cTokenizer *token = new cTokenizer(p, "/");
         for (i = 1; i <= token->Count(); i++)
         {
-          ChangeChars(token->GetToken(i), DVDSwitchSetup.ChangeCharsOSDName);
-          buffer += token->GetToken(i);
+          char * s = strdup(token->GetToken(i));
+          ChangeChars(s, DVDSwitchSetup.ChangeCharsOSDName);
+          buffer += s;
           if(i != token->Count())
             buffer += DVDSwitchSetup.SubCatCutter;
+          free(s);
         }
         DELETENULL(token);
       }
@@ -950,7 +953,7 @@ char *cMainMenu::CreateOSDName(eMainMenuItem itype, char *file)
       if(DVDSwitchSetup.SpacesBeforeAfterCat)
         tmpOSD += " ";
       if(isempty(&buffer))
-        tmpOSD += (char*)tr("without Catergory");
+        tmpOSD += tr("without category");
       else
         tmpOSD += &buffer;
       if(DVDSwitchSetup.SpacesBeforeAfterCat)
@@ -997,7 +1000,7 @@ char *cMainMenu::CreateOSDName(eMainMenuItem itype, char *file)
       break;
     case iDevice:
       tmpOSD = "--> (";
-      tmpOSD += (char*)tr("DVD-Drive");
+      tmpOSD += tr("DVD-Drive");
       tmpOSD += ") <--";
       break;
     default:
@@ -1043,7 +1046,7 @@ void cMainMenu::SetState(eMainMenuState state)
         info = new cFileInfo(MainMenuOptions.CurrentDir());
         if(!info->isWriteable())
         {
-          OSD_ERRMSG(tr("no Rights to rename"));
+          OsdMsg(mtError,tr("Missing rights to rename!"));
           SetState(mmsNone);
           DELETENULL(info);
           break;
@@ -1095,16 +1098,16 @@ cDirHandling::cDirHandling(cOsdMenu *osdobject, cDirHandlingOpt *dirobject)
   DirObject = dirobject;
 }
 
-int cDirHandling::Build(char *dir, bool emptydirs)
+int cDirHandling::Build(const char *dir, bool emptydirs, cImageList &ImageList)
 {
   int ret = -1;
   cMainMenuItem *mItem = NULL;
 
-  cDirList *DirList = new cDirList();
+  cDirList *DirList = new cDirList(ImageList);
   if(DirList->Load(dir, false))
   {
     if(DirObject->isParent(dir))
-      OsdObject->Add(new cMainMenuItem(iParent, DirObject->ParentDir()));
+      OsdObject->Add(new cMainMenuItem(iParent, ImageList, DirObject->ParentDir()));
 
     cFileListItem *fItem = DirList->First();
     while(fItem)
@@ -1112,7 +1115,7 @@ int cDirHandling::Build(char *dir, bool emptydirs)
       if(!DirList->DirIsIn(fItem, ImageList.GetDirContains()) &&
           (!DirList->DirIsEmpty(fItem) || emptydirs))
       {
-        OsdObject->Add(new cMainMenuItem(iDir, fItem->Value()));
+        OsdObject->Add(new cMainMenuItem(iDir, ImageList, fItem->Value()));
         mItem = (cMainMenuItem*)OsdObject->Last();
         if(mItem &&
            DirObject->getLastSelectItemName() &&

@@ -21,23 +21,24 @@ class cMainMenu : public cOsdMenu
     int FirstSelectable;
     eMainMenuState State;
     cCMDImage *CMDImg;
+    cImageList &ImageList;
 
     void Init(void);
     void SetMenuTitle(void);
-    void Build(char *dir);
-    void BuildDisp0(char *dir);
-    void BuildDisp1(char *dir);
-    void BuildDisp2(char *dir);
+    void Build(const char *dir);
+    void BuildDisp0(const char *dir);
+    void BuildDisp1(const char *dir);
+    void BuildDisp2(const char *dir);
     eOSState MenuMove(eKeys Key);
     eOSState SelectItem(void);
     eOSState Commands(eKeys Key);
   public:
-    cMainMenu(void);
+    cMainMenu(cImageList &ImageList);
     ~cMainMenu(void);
     void SetHelp(void);
     virtual eOSState ProcessKey(eKeys Key);
 
-    static char *CreateOSDName(eMainMenuItem itype, char *file = NULL);
+    static char *CreateOSDName(eMainMenuItem itype, cImageList &ImageList, const char *file = NULL);
     void SetState(eMainMenuState state);
     eMainMenuState GetState(void) { return State; };
 };
@@ -69,7 +70,7 @@ class cDirHandlingOpt
       free(LSDir);
       free(LSItemName);
     }
-    char *ImageDir(char *dir = NULL)
+    char *ImageDir(const char *dir = NULL)
     {
       if(dir)
       {
@@ -78,7 +79,7 @@ class cDirHandlingOpt
       }
       return IDir;
     }
-    char *CurrentDir(char *dir = NULL)
+    char *CurrentDir(const char *dir = NULL)
     {
       if(dir)
       {
@@ -87,7 +88,7 @@ class cDirHandlingOpt
       }
       return CDir;
     }
-    char *ParentDir(char *dir = NULL)
+    char *ParentDir(const char *dir = NULL)
     {
       if(dir)
       {
@@ -96,7 +97,7 @@ class cDirHandlingOpt
       }
       return PDir;
     }
-    char *LastSelDir(char *dir = NULL)
+    char *LastSelDir(const char *dir = NULL)
     {
       if(dir)
       {
@@ -105,19 +106,19 @@ class cDirHandlingOpt
       }
       return LSDir;
     }
-    bool isParent(char *dir)
+    bool isParent(const char *dir)
     {
       if(dir && PDir && strcasecmp(dir, PDir))
         return true;
       return false;
     }
-    bool isLastSel(char *dir)
+    bool isLastSel(const char *dir)
     {
       if(dir && LSDir && !strcasecmp(dir, LSDir))
         return true;
       return false;
     }
-    void setLastSelectItemName(char *filename = NULL)
+    void setLastSelectItemName(const char *filename = NULL)
     {
       FREENULL(LSItemName);
       if(filename)
@@ -140,7 +141,7 @@ class cDirHandling
   public:
     cDirHandling(cOsdMenu *osdobject, cDirHandlingOpt *dirobject);
 
-    int Build(char *dir, bool emptydirs);
+    int Build(const char *dir, bool emptydirs, cImageList &ImageList);
     void ProcessKey(cMainMenuItem *mItem);
 };
 

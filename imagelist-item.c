@@ -1,6 +1,6 @@
 #include "imagelist-item.h"
 
-cImageListItem::cImageListItem(char *lname, char *sname, eFileInfo type, char *value, bool hide)
+cImageListItem::cImageListItem(const char *lname, const char *sname, eFileInfo type, const char *value, bool hide)
 {
   LName = NULL;
   SName = NULL;
@@ -9,7 +9,7 @@ cImageListItem::cImageListItem(char *lname, char *sname, eFileInfo type, char *v
 
   Edit(lname, sname, type, value, hide);
 
-  Debug();
+  debug();
 }
 
 cImageListItem::~ cImageListItem(void)
@@ -20,10 +20,10 @@ cImageListItem::~ cImageListItem(void)
   free(SString);
 }
 
-void cImageListItem::Edit(char *lname, char *sname, eFileInfo type, char *value, bool hide)
+void cImageListItem::Edit(const char *lname, const char *sname, eFileInfo type, const char *value, bool hide)
 {
-  DEBUG("New/Edit ImageListItem");
-  Debug();
+  dsyslog("New/Edit ImageListItem");
+  debug();
 
   free(LName);
   free(SName);
@@ -42,16 +42,16 @@ void cImageListItem::Edit(char *lname, char *sname, eFileInfo type, char *value,
 
   MakeSetupString();
 
-  Debug();
+  debug();
 }
 
-void cImageListItem::Debug(void)
+void cImageListItem::debug(void)
 {
-  DEBUG("Items:");
-  DEBUG("  LongName: %s", LName);
-  DEBUG("  ShortName: %s", SName);
-  DEBUG("  FileType: %i", (int)fType);
-  DEBUG("  Value: %s", Value);
-  DEBUG("  Hide: %s", HideExt ? "TRUE" : "FALSE");
-  DEBUG("  SaveString: %s", SString);
+  dsyslog("Items:");
+  dsyslog("  LongName: %s", LName);
+  dsyslog("  ShortName: %s", SName);
+  dsyslog("  FileType: %i", (int)fType);
+  dsyslog("  Value: %s", Value);
+  dsyslog("  Hide: %s", HideExt ? "TRUE" : "FALSE");
+  dsyslog("  SaveString: %s", SString);
 }

@@ -45,8 +45,7 @@ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
 
-#OBJS = $(PLUGIN).o i18n.o menu-item.o menu.o dvdlist-item.o dvdlist.o dvdplugin.o setup.o setup-itypes.o imagelist.o imagelist-item.o commands.o helpers.o debug.o
-OBJS = $(PLUGIN).o i18n.o debug.o helpers.o tools.o imagelist-item.o imagelist.o dvdlist-item.o dvdlist.o dvdplugin.o menu-item.o menu.o setup.o setup-itypes.o commands.o
+OBJS = $(PLUGIN).o helpers.o tools.o imagelist-item.o imagelist.o dvdlist-item.o dvdlist.o dvdplugin.o menu-item.o menu.o setup.o setup-itypes.o commands.o
 
 ### Implicit rules:
 
@@ -62,9 +61,34 @@ $(DEPFILE): Makefile
 
 -include $(DEPFILE)
 
+### Internationalization (I18N):
+
+PODIR     = po
+LOCALEDIR = $(VDRDIR)/locale
+I18Npo    = $(wildcard $(PODIR)/*.po)
+I18Nmsgs  = $(addprefix $(LOCALEDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
+I18Npot   = $(PODIR)/$(PLUGIN).pot
+
+%.mo: %.po
+	msgfmt -c -o $@ $<
+
+$(I18Npot): $(wildcard *.c)
+	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address=' ' -o $@ $^
+
+%.po: $(I18Npot)
+	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
+	@touch $@
+
+$(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
+	@mkdir -p $(dir $@)
+	cp $< $@
+
+.PHONY: i18n
+i18n: $(I18Nmsgs) $(I18Npot)
+
 ### Targets:
 
-all: libvdr-$(PLUGIN).so
+all: libvdr-$(PLUGIN).so i18n
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@

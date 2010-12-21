@@ -1,6 +1,9 @@
 VDR Plugin 'dvdswitch' Revision History
 ---------------------------------------
 
+2009-10-03: Version 0.1.4
+- Update to vdr 1.6.0
+
 2006-06-26: Version 0.1.3
 - FIX: Verstecken des Hauptmenüeintrages funktioniert nun (Dank an kilroy
 und wilderigel)

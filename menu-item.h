@@ -20,7 +20,7 @@ class cMainMenuItem : public cOsdItem
     char *File;
     char *OSD;
   public:
-    cMainMenuItem(eMainMenuItem itype, char *file = NULL);
+    cMainMenuItem(eMainMenuItem itype, cImageList &ImageList, const char *file = NULL);
     ~cMainMenuItem(void);
 
     eMainMenuItem Type(void) { return iType; };

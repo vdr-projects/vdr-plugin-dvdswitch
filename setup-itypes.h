@@ -8,13 +8,14 @@ class cMenuSetupDSITypes : public cOsdMenu
 {
   private:
     cSetupLine *SetupLine;
+    cImageList &ImageList;
     bool Select;
     int *RetIndex;
     char *Buffer;
  
     void Set(void);
   public:
-    cMenuSetupDSITypes(bool select = false, int* retindex = NULL, char *buffer = NULL);
+    cMenuSetupDSITypes(cImageList &ImageList, bool select = false, int* retindex = NULL, char *buffer = NULL);
     void SetHelp(void);
   protected:
     virtual eOSState ProcessKey(eKeys Key);
@@ -30,10 +31,11 @@ class cMenuSetupDSITypesItem : public cOsdMenu
     const char *FileTypes[2];
     char Extension[20];
     int HideExtension;
+    cImageList &ImageList; 
 
     void Set(void);
   public:
-    cMenuSetupDSITypesItem(int itemindex);
+    cMenuSetupDSITypesItem(cImageList &ImageList, int itemindex);
     virtual eOSState ProcessKey(eKeys Key);
 };
 

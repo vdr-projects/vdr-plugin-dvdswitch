@@ -2,8 +2,8 @@
 #define __COMMANDS_DVDSWITCH_H
 
 #include <vdr/plugin.h>
-#include "menu.h"
 #include "imagelist.h"
+#include "menu.h"
 #include "setup.h"
 #include <stdlib.h>
 
@@ -45,8 +45,9 @@ class cCMDMenu : public cOsdMenu
   private:
     cMainMenuItem *iItem;
     cMainMenu *OsdObject;
+    cImageList &ImageList;
   public:
-    cCMDMenu(cMainMenuItem *item, cMainMenu *osdobject);
+    cCMDMenu(cImageList &ImageList, cMainMenuItem *item, cMainMenu *osdobject);
     virtual eOSState ProcessKey(eKeys Key);
 };
 
@@ -58,6 +59,7 @@ class cCMDDir : public cOsdMenu, private cDirHandlingOpt
     cMainMenu *OsdObject;
     bool Select;
     char *Buffer;
+    cImageList &ImageList;
 
     void Build(char *dir = NULL);
     void SetDir(char *value = NULL)
@@ -73,7 +75,7 @@ class cCMDDir : public cOsdMenu, private cDirHandlingOpt
     eOSState Edit(cMainMenuItem *mItem);
     eOSState Edit(eKeys Key);
   public:
-    cCMDDir(cMainMenu *osdobject = NULL, bool select = false, char *buffer = NULL);
+    cCMDDir(cImageList &ImageList, cMainMenu *osdobject = NULL, bool select = false, char *buffer = NULL);
 
     virtual eOSState ProcessKey(eKeys Key);
     void SetHelp(void);
@@ -86,10 +88,11 @@ class cCMDMove : public cOsdMenu, private cDirHandlingOpt
     cMainMenu *OsdObject;
     bool Dir;
     bool Direct;
+    cImageList &ImageList;
 
     void Build(char *dir = NULL);
   public:
-    cCMDMove(char *file, cMainMenu *osdobject, bool dir = true, bool direct = false);
+    cCMDMove(cImageList &ImageList, const char *file, cMainMenu *osdobject, bool dir = true, bool direct = false);
     ~cCMDMove(void) { free(File); }
 
     virtual eOSState ProcessKey(eKeys Key);
@@ -109,9 +112,9 @@ class cCMDImage
     cCMDImage(cMainMenu *osdobject = NULL);
     ~cCMDImage(void);
 
-    char* Rename(char *file = NULL);
-    eOSState Delete(char *file = NULL);
-    eOSState Burn(char *file);
+    char* Rename(const char *file = NULL);
+    eOSState Delete(const char *file = NULL);
+    eOSState Burn(const char *file);
 };
 
 class cCMDImageRead : public cOsdMenu
@@ -121,8 +124,10 @@ class cCMDImageRead : public cOsdMenu
     char Dir[MaxFileName];
     char ImgTypeTxt[MaxFileName];
     int ImgType;
+    cImageList &ImageList;
+
   public:
-    cCMDImageRead(void);
+    cCMDImageRead(cImageList &ImageList);
     ~cCMDImageRead(void);
 
     void SetHelp(void);
@@ -138,10 +143,10 @@ class cCMDImageReadThread : public cThread
   protected:
     virtual void Action(void)
     {
-      DEBUG("ReadThread gestartet");
+      dsyslog("ReadThread started");
       if(File && Dir && FileType != tNone)
       {
-        DEBUG("Aktion wird ausgeführt");
+        dsyslog("ReadThread executed");
         char *cmd = NULL;
         char *output = NULL;
         char *mountpoint = NULL;
@@ -156,7 +161,7 @@ class cCMDImageReadThread : public cThread
           asprintf(&cmd,
                    "cat /etc/fstab | grep -e \"%s\" | grep -e \"^[^#]\"",
                    step == 1 ? DVDSwitchSetup.DVDLinkOrg : buffer);
-          DEBUG("Commando: %s", cmd);
+          dsyslog("ReadThread call: %s", cmd);
 
           FILE *p = popen(cmd, "r");
           if(p)
@@ -170,8 +175,10 @@ class cCMDImageReadThread : public cThread
             pclose(p);
           }
           token = new cTokenizer(output, " ");
-          if(token->Count() > 1)
-            mountpoint = strdup(stripspace(token->GetToken(2)));
+          if(token->Count() > 1) {
+            char* s = strdup(token->GetToken(2));
+            mountpoint = stripspace(s);
+          }
           DELETENULL(token);
         }
         FREENULL(cmd);
@@ -183,18 +190,18 @@ class cCMDImageReadThread : public cThread
                   buffer,
                   mountpoint,
                   (FileType == tFile) ? "IMAGE" : "DIR");
-        DEBUG("Aufruf: %s", cmd);
+        dsyslog("ReadThread call: %s", cmd);
         int rc = system(cmd);
-        DEBUG("Rückgabe Aufruf: %i", rc);
+        dsyslog("ReadThread return value: %i", rc);
         FREENULL(cmd);
         FREENULL(mountpoint);
       }
       delete(this);
     };
   public:
-    cCMDImageReadThread(char *file, char *dir, int imgtype)
+    cCMDImageReadThread(char *file, char *dir, int imgtype, cImageList &ImageList)
     {
-      DEBUG("ReadThread created");
+      dsyslog("ReadThread created");
       File = NULL;
       Dir = NULL;
       FileType = tNone;
@@ -225,27 +232,27 @@ class cCMDImageBurnThread : public cThread
   protected:
     virtual void Action(void)
     {
-      DEBUG("BurnThread gestartet");
+      dsyslog("BurnThread started");
       if(File && FileType != tNone)
       {
-        DEBUG("Aktion wird ausgeführt");
+        dsyslog("BurnThread executed");
         char *cmd;
         asprintf(&cmd,
                   "'%s' '%s' '%s'",
                   DVDSwitchSetup.DVDWriteScript,
                   File,
                   FileType == tFile ? "IMAGE" : "DIR");
-        DEBUG("Aufruf: %s", &cmd);
+        dsyslog("BurnThread call: %s", cmd);
         int rc = system(cmd);
-        DEBUG("Rückgabe Aufruf: %i", rc);
+        dsyslog("BurnThread return value: %i", rc);
         FREENULL(cmd);
       }
         delete(this);
     };
   public:
-    cCMDImageBurnThread(char *file, eFileInfo type)
+    cCMDImageBurnThread(const char *file, eFileInfo type)
     {
-      DEBUG("BurnThread created");
+      dsyslog("BurnThread created");
       File = NULL;
       FileType = tNone;
 

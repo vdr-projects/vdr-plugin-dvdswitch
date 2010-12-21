@@ -2,19 +2,19 @@
 #include <vdr/plugin.h>
 #include <vdr/player.h>
 #include <unistd.h>
+#include "imagelist.h"
 #include "dvdplugin.h"
-#include "debug.h"
 
 cDVDPluginThread::cDVDPluginThread(char *image)
   :cThread("DVDPluginThread")
 {
-  DEBUG("Neuer DVD Thread angelegt");
+  dsyslog("Create new DVD Thread");
   Image = image ? strdup(image) : NULL;
 }
 
 cDVDPluginThread::~cDVDPluginThread(void)
 {
-  DEBUG("DVD Thread beendet");
+  dsyslog("DVD Thread stopped");
 
   free(Image);
   Cancel();
@@ -22,7 +22,7 @@ cDVDPluginThread::~cDVDPluginThread(void)
 
 void cDVDPluginThread::Action(void)
 {
-  DEBUG("DVD Thread gestartet");
+  dsyslog("DVD Thread started");
   if(Image)
     cDVDPlugin::ChangeLink(Image);
 
@@ -32,27 +32,27 @@ void cDVDPluginThread::Action(void)
   if(plugin)
   {
     plugin->MainMenuAction();
-    DEBUG("DVD MainMenuAction gestartet");
+    dsyslog("DVD MainMenuAction called");
   }
 #else
   cRemote::CallPlugin("dvd");
-  DEBUG("DVD Plugin gestaret");
+  dsyslog("DVD Plugin called");
 #endif
 
   cCondWait::SleepMs(2 * 1000);
   cControl *control = cControl::Control();
-  DEBUG(control ? (char*)"Control gefunden" : (char*)"Control nicht gefunden");
+  dsyslog(control ? "DVD control found" : "DVD control not found");
   while(control)
   {
     cCondWait::SleepMs(5 * 1000);
     control = cControl::Control();
   }
-  DEBUG("Control wurde geschlossen");
+  dsyslog("DVD control closed");
 
   if(Image)
     cDVDPlugin::ChangeLink(DVDSwitchSetup.DVDLinkOrg);
 
-  DEBUG("Beende thread");
+  dsyslog("DVD Thread closed");
   cDVDPlugin::Exit();
 }
 
@@ -62,13 +62,13 @@ cDVDPluginThread *cDVDPlugin::thread = NULL;
 
 void cDVDPlugin::DetectDevice(void)
 {
-  DEBUG("Scan nach DVD Device");
+  dsyslog("Scan nach DVD Device");
   char *cmd = NULL;
   char *output = NULL;
   char *dvd = NULL;
 
   asprintf(&cmd, "ps -p %i -o cmd --no-header", getpid());
-  DEBUG("Commando: %s", cmd);
+  dsyslog("Commando: %s", cmd);
 
   FILE *p = popen(cmd, "r");
   if(p)
@@ -108,12 +108,12 @@ void cDVDPlugin::DetectDevice(void)
   
   if(dvd)
   {
-    DEBUG("Erkanntes DVD Device: %s", dvd);
+    isyslog("Used DVD Device: %s", dvd);
     DVDSwitchSetup.SetDVDDevice(dvd);
   }
   else
   {
-    DEBUG("Nehme Standard-DVD Device");
+    isyslog("Use Default-DVD Device /dev/dvd");
     DVDSwitchSetup.SetDVDDevice("/dev/dvd");
   }
 
@@ -165,9 +165,9 @@ void cDVDPlugin::ChangeLink(char *target)
     int rc = 0;
 
     asprintf(&cmd, LINK, target, DVDSwitchSetup.DVDLink);
-    DEBUG("Ändere link: %s", cmd);
+    dsyslog("Change link: %s", cmd);
     rc = system(cmd);
-    DEBUG("Rückgabe Änderung: %i", rc);
+    dsyslog("Change link got: %i", rc);
     free(cmd);
   }
 }

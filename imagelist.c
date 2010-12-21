@@ -1,6 +1,6 @@
 #include "imagelist.h"
 
-cImageList ImageList;
+//cImageList ImageList;
 
 cImageList::cImageList(void)
 {
@@ -13,25 +13,25 @@ cImageList::~ cImageList(void)
 
 void cImageList::Init(void)
 {
-  DEBUG("Init ImageList");
+  dsyslog("Init ImageList");
   if(!Setup)
   {
-    Add(new cImageListItem((char*)tr("Directory with 'VIDEO_TS' Folder"),
-                           (char*)tr("Directory"),
+    Add(new cImageListItem(tr("Directory with 'VIDEO_TS' Folder"),
+                           tr("Directory"),
                            tDir,
                            "video_ts",
                            true));
-    Add(new cImageListItem((char*)tr("File with '.iso' Extension"),
-                           (char*)tr("Iso-Image"),
+    Add(new cImageListItem(tr("File with '.iso' Extension"),
+                           tr("Iso-Image"),
                            tFile,
                            ".iso",
                            true));
   }
 }
 
-void cImageList::AddItem(char *item)
+void cImageList::AddItem(const char *item)
 {
-  DEBUG("Neues Item soll hinzugefügt werden: %s", item);
+  dsyslog("Neues Item soll hinzugefügt werden: %s", item);
 
   if (!isempty(item))
   {
@@ -46,9 +46,9 @@ void cImageList::AddItem(char *item)
   }
 }
 
-void cImageList::AddSetup(char *value)
+void cImageList::AddSetup(const char *value)
 {
-  DEBUG("Erhalte SetupString: %s",value);
+  dsyslog("Erhalte SetupString: %s",value);
 
   Setup = true;
   Clear();
@@ -64,14 +64,14 @@ void cImageList::AddSetup(char *value)
 
 char *cImageList::GetSetupString(void)
 {
-  DEBUG("Erstelle SetupString");
+  dsyslog("Erstelle SetupString");
 
   SString = NULL;
   cImageListItem *item = First();
 
   while(item)
   {
-    DEBUG("Füge hinzu: %s", item->SaveString());
+    dsyslog("Füge hinzu: %s", item->SaveString());
     SString += item->SaveString();
     SString += "@";
     item = Next(item);
@@ -82,17 +82,17 @@ char *cImageList::GetSetupString(void)
 
 char *cImageList::GetExtensions(void)
 {
-  DEBUG("Erstelle Liste aller Extensions");
+  dsyslog("Erstelle Liste aller Extensions");
 
   Ext = NULL;
   cImageListItem *item = First();
 
   while(item)
   {
-    DEBUG("Item ist vom Type: %i", (int) item->GetFType());
+    dsyslog("Item ist vom Type: %i", (int) item->GetFType());
     if(item->GetFType() == tFile)
     {
-      DEBUG("Item wird hinzugefügt: %s", item->GetValue());
+      dsyslog("Item wird hinzugefügt: %s", item->GetValue());
       Ext += item->GetValue();
       Ext += "@";
     }
@@ -104,17 +104,17 @@ char *cImageList::GetExtensions(void)
 
 char *cImageList::GetHideExtensions(void)
 {
-  DEBUG("Erstelle Liste aller Extensions die ausgeblendet werden sollen");
+  dsyslog("Erstelle Liste aller Extensions die ausgeblendet werden sollen");
 
   HideExt = NULL;
   cImageListItem *item = First();
 
   while(item)
   {
-    DEBUG("Item ist vom Type: %i", (int) item->GetFType());
+    dsyslog("Item ist vom Type: %i", (int) item->GetFType());
     if(item->GetFType() == tFile && item->IsHide())
     {
-      DEBUG("Item wird hinzugefügt: %s", item->GetValue());
+      dsyslog("Item wird hinzugefügt: %s", item->GetValue());
       HideExt += item->GetValue();
       HideExt += "@";
     }
@@ -126,17 +126,17 @@ char *cImageList::GetHideExtensions(void)
 
 char *cImageList::GetDirContains(void)
 {
-  DEBUG("Erstelle Liste aller Verzeichnisinhalte");
+  dsyslog("Erstelle Liste aller Verzeichnisinhalte");
 
   DirIn = NULL;
   cImageListItem *item = First();
 
   while(item)
   {
-    DEBUG("Item ist vom Type: %i", (int) item->GetFType());
+    dsyslog("Item ist vom Type: %i", (int) item->GetFType());
     if(item->GetFType() == tDir)
     {
-      DEBUG("Item wird hinzugefügt: %s", item->GetValue());
+      dsyslog("Item wird hinzugefügt: %s", item->GetValue());
       DirIn += item->GetValue();
       DirIn += "@";
     }
@@ -146,9 +146,9 @@ char *cImageList::GetDirContains(void)
   return stripspace(&DirIn);
 }
 
-char *cImageList::GetShortName(char *file)
+char *cImageList::GetShortName(const char *file)
 {
-  DEBUG("Shortname wird gesucht: %s", file);
+  dsyslog("Shortname wird gesucht: %s", file);
 
   Short = NULL;
   cImageListItem *item = First();
@@ -185,7 +185,7 @@ char *cImageList::GetShortName(char *file)
   return &Short;
 }
 
-bool cImageList::IsHide(char *ext)
+bool cImageList::IsHide(const char *ext)
 {
   if(!ext)
     return false;

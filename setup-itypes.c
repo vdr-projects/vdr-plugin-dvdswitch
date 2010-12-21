@@ -1,19 +1,17 @@
 #include <vdr/plugin.h>
 #include "setup-itypes.h"
-#include "i18n.h"
+#include "setup.h"
 
-cMenuSetupDSITypes::cMenuSetupDSITypes(bool select, int* retindex, char *buffer)
+cMenuSetupDSITypes::cMenuSetupDSITypes(cImageList &imagelist, bool select, int* retindex, char *buffer)
   : cOsdMenu(tr("Imagetypes"))
+  , ImageList(imagelist)
 {
-  DEBUG("Ermitlle ersten Setup-Eintrag");
+  dsyslog("Ermitlle ersten Setup-Eintrag");
   cSetupLine *item = Setup.First();
   Select = select;
   RetIndex = retindex;
   Buffer = buffer;
-
-  if(item)
-    DEBUG("OK");
-  
+ 
   while(item)
   {
     if(item->Plugin() &&
@@ -74,10 +72,10 @@ eOSState cMenuSetupDSITypes::ProcessKey(eKeys Key)
     switch(Key)
     {
       case kRed:
-        state = AddSubMenu(new cMenuSetupDSITypesItem(Current()));
+        state = AddSubMenu(new cMenuSetupDSITypesItem(ImageList, Current()));
         break;
       case kGreen:
-        state = AddSubMenu(new cMenuSetupDSITypesItem(ImageList.Count()));
+        state = AddSubMenu(new cMenuSetupDSITypesItem(ImageList, ImageList.Count()));
         break;
       case kYellow:
         if(Interface->Confirm(tr("really delete Entry?")))
@@ -115,17 +113,17 @@ eOSState cMenuSetupDSITypes::ProcessKey(eKeys Key)
         {
           if(SetupLine)
           {
-            DEBUG("Lösche SetupLine");
+            dsyslog("Lösche SetupLine");
             Setup.Del(SetupLine);
           }
-          DEBUG("Hole SetupString");
+          dsyslog("Hole SetupString");
           if(ImageList.GetSetupString())
             SetupLine = new cSetupLine("ImageTypes", ImageList.GetSetupString(), "dvdswitch");
           else
             SetupLine = new cSetupLine("ImageTypes", "", "dvdswitch");
-          DEBUG("neue SetupLine erstellt");
+          dsyslog("neue SetupLine erstellt");
           Setup.Add(SetupLine);
-          DEBUG("neue SetupLine hinzugefügt");
+          dsyslog("neue SetupLine hinzugefügt");
           return osBack;
         }
         break;
@@ -139,17 +137,18 @@ eOSState cMenuSetupDSITypes::ProcessKey(eKeys Key)
 
 // --- cMenuSetupDSITypesItem -----------------------------------
 
-cMenuSetupDSITypesItem::cMenuSetupDSITypesItem(int itemindex)
+cMenuSetupDSITypesItem::cMenuSetupDSITypesItem(cImageList &imagelist, int itemindex)
   : cOsdMenu(tr("New"), 22)
+  , ImageList(imagelist)
 {
   if(itemindex < ImageList.Count())
   {
     SetTitle(tr("Edit"));
     Item = ImageList.Get(itemindex);
-    strn0cpy(LongName, Item->GetLName(), 50);
-    strn0cpy(ShortName, Item->GetSName(), 20);
+    strn0cpy(LongName, Item->GetLName(), memberof(LongName));
+    strn0cpy(ShortName, Item->GetSName(), memberof(ShortName));
     FileType = (int)Item->GetFType() - 1;
-    strn0cpy(Extension, Item->GetValue(), 20);
+    strn0cpy(Extension, Item->GetValue(), memberof(Extension));
     HideExtension = Item->IsHide();
   } else
   {
@@ -212,20 +211,20 @@ eOSState cMenuSetupDSITypesItem::ProcessKey(eKeys Key)
       case kOk:
         if(isempty(LongName))
         {
-          OSD_WARNMSG(tr("'Description' must not empty!"));
+          OsdMsg(mtWarning,tr("'Description' must not empty!"));
           return osContinue;
         }
         if(isempty(ShortName))
         {
-          OSD_WARNMSG(tr("'Type-Title' must not empty!"));
+          OsdMsg(mtWarning,tr("'Type-Title' must not empty!"));
           return osContinue;
         }
         if(isempty(Extension))
         {
           if(!FileType)
-            OSD_WARNMSG(tr("'Directory contains' must not empty!"));
+            OsdMsg(mtWarning,tr("'Directory contains' must not empty!"));
           else
-            OSD_WARNMSG(tr("'File Extension' must not empty!"));
+            OsdMsg(mtWarning,tr("'File Extension' must not empty!"));
           return osContinue;
         }
         if(!Item)

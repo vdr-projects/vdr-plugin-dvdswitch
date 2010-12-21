@@ -16,22 +16,20 @@ class cImageList : public cList<cImageListItem>
 
     bool Setup;
 
-    void AddItem(char *item);
+    void AddItem(const char *item);
   public:
     cImageList(void);
-    ~cImageList(void);
+    virtual ~cImageList(void);
 
     void Init(void);
-    void AddSetup(char *value);
+    void AddSetup(const char *value);
 
     char *GetSetupString(void);
     char *GetExtensions(void);
     char *GetHideExtensions(void);
     char *GetDirContains(void);
-    char *GetShortName(char *file);
-    bool IsHide(char *ext);
+    char *GetShortName(const char *file);
+    bool IsHide(const char *ext);
 };
-
-extern cImageList ImageList;
 
 #endif //__IMAGELIST_DVDSWITCH_H

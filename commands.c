@@ -1,10 +1,10 @@
 #include <unistd.h>
 #include <vdr/tools.h>
 #include "commands.h"
+#include "imagelist.h"
 #include "setup.h"
 #include "tools.h"
 #include "menu-item.h"
-#include "imagelist.h"
 #include "dvdplugin.h"
 #include "setup-itypes.h"
 
@@ -13,9 +13,9 @@
 eOSState cCMD::Play(cMainMenuItem *item)
 {
   if(item)
-    DEBUG("Play Image %s, %i", item->FileName(), item->Type());
+    dsyslog("Play Image %s, %i", item->FileName(), item->Type());
   else
-    DEBUG("Play Image: Kein Image angegeben");
+    dsyslog("Play Image: Kein Image angegeben");
 
   if(!item || item->Type() == iDevice)
     cDVDPlugin::Start();
@@ -29,9 +29,9 @@ eOSState cCMD::Eject(bool close)
 {
   char *cmd = NULL;
   asprintf(&cmd, "eject %s %s", close ? "-t" : "", DVDSwitchSetup.DVDLinkOrg);
-  DEBUG("Eject: %i - %s", close, cmd);
+  dsyslog("Eject: %i - %s", close, cmd);
   int rc = system(cmd);
-  DEBUG("Eject-Rückgabe: %i", rc);
+  dsyslog("Eject-Rückgabe: %i", rc);
   free(cmd);
 
   return osContinue;
@@ -39,8 +39,9 @@ eOSState cCMD::Eject(bool close)
 
 // --- cCMDMenu -------------------------------------------------------------
 
-cCMDMenu::cCMDMenu(cMainMenuItem *item, cMainMenu *osdobject)
+cCMDMenu::cCMDMenu(cImageList &imagelist, cMainMenuItem *item, cMainMenu *osdobject)
   : cOsdMenu(tr("Commands"))
+  , ImageList(imagelist)
 {
   iItem = item;
   OsdObject = osdobject;
@@ -116,7 +117,7 @@ eOSState cCMDMenu::ProcessKey(eKeys Key)
         switch(cmd)
         {
           case cmdDirManage:
-            return AddSubMenu(new cCMDDir(OsdObject));
+            return AddSubMenu(new cCMDDir(ImageList, OsdObject));
             break;
           case cmdDVDopen:
             return cCMD::Eject(false);
@@ -134,7 +135,7 @@ eOSState cCMDMenu::ProcessKey(eKeys Key)
             return osBack;
             break;
           case cmdImgMove:
-            return AddSubMenu(new cCMDMove(iItem->FileName(), OsdObject, false));
+            return AddSubMenu(new cCMDMove(ImageList, iItem->FileName(), OsdObject, false));
             break;
           case cmdImgDelete:
             CMDImage = new cCMDImage(OsdObject);
@@ -149,7 +150,7 @@ eOSState cCMDMenu::ProcessKey(eKeys Key)
             return ret;
             break;
           case cmdImgRead:
-            return AddSubMenu(new cCMDImageRead);
+            return AddSubMenu(new cCMDImageRead(ImageList));
             break;
           default:
             break;
@@ -165,10 +166,11 @@ eOSState cCMDMenu::ProcessKey(eKeys Key)
 
 // --- cCMDDir ------------------------------------------------------------
 
-cCMDDir::cCMDDir(cMainMenu *osdobject, bool select, char *buffer)
+cCMDDir::cCMDDir(cImageList &imagelist, cMainMenu *osdobject, bool select, char *buffer)
   : cOsdMenu(tr("Directory Management"))
+  , ImageList(imagelist)
 {
-  DEBUG("Verzeichnis Management");
+  dsyslog("Verzeichnis Management");
   ImageDir(DVDSwitchSetup.ImageDir);
   CurrentDir(DVDSwitchSetup.ImageDir);
   ParentDir(DVDSwitchSetup.ImageDir);
@@ -211,7 +213,7 @@ void cCMDDir::SetHelp(void)
 
 void cCMDDir::Build(char *dir)
 {
-  DEBUG("Erstelle Verzeichnisliste %s", dir);
+  dsyslog("Erstelle Verzeichnisliste %s", dir);
   if(!dir)
     dir = CurrentDir();
 
@@ -223,7 +225,7 @@ void cCMDDir::Build(char *dir)
   }
 
   cDirHandling *DirHand = new cDirHandling(this, this);
-  SetCurrent(Get(DirHand->Build(dir, true)));
+  SetCurrent(Get(DirHand->Build(dir, true, ImageList)));
   delete(DirHand);
 
   Display();
@@ -259,9 +261,9 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
             info = new cFileInfo(mItem->FileName());
             if(!info->isExecutable() || !info->isReadable())
             {
-              DEBUG("Verzeichniswechsel: Keine Rechte");
+              esyslog("Can't access to directory!");
               DELETENULL(info);
-              OSD_ERRMSG(tr("no Rights!"));
+              OsdMsg(mtError,tr("No rights to change inside this directory!"));
               return osContinue;
               break;
             }
@@ -279,16 +281,16 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
             return New();
             break;
           case kYellow:
-            if(mItem->Type() == iDir && Interface->Confirm(tr("really delete?")))
+            if(mItem->Type() == iDir && Interface->Confirm(tr("Really delete?")))
             {
-              DEBUG("Verzeichnis löschen");
+              dsyslog("Confirm delete directory");
               if(cFileCMD::DirIsEmpty(mItem->FileName()) ||
-                 (!cFileCMD::DirIsEmpty(mItem->FileName()) && Interface->Confirm(tr("Directory not empty. however delete?"))))
+                 (!cFileCMD::DirIsEmpty(mItem->FileName()) && Interface->Confirm(tr("Directory not empty! However delete?"))))
               {
                 cFileDelThread *del = new cFileDelThread(mItem->FileName());
                 if(del->OK())
                 {
-                  DEBUG("Verzeichnis löschen gestartet");
+                  dsyslog("Start delete directory");
                   del->Start();
                   Build();
                   OsdObject->SetState(mmsReInit);
@@ -304,12 +306,12 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
             {
               if(Select)
               {
-                DEBUG("Verzeichnis gewählt: %s", mItem->FileName());
+                dsyslog("Directory selected: %s", mItem->FileName());
                 info = new cFileInfo(mItem->FileName());
                 if(!info->isExecutable() || !info->isReadable())
                 {
-                  DEBUG("Verzeichnis: Keine Rechte");
-                  OSD_ERRMSG(tr("no Rights!"));
+                  esyslog("Can't access to directory!");
+                  OsdMsg(mtError,tr("No rights to change inside this directory!"));
                 }
                 else
                 {
@@ -325,7 +327,7 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
                 return osContinue;
               }
               else
-                return AddSubMenu(new cCMDMove(mItem->FileName(), OsdObject));
+                return AddSubMenu(new cCMDMove(ImageList, mItem->FileName(), OsdObject));
             }
             break;
           default:
@@ -361,12 +363,12 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
 
 eOSState cCMDDir::New(void)
 {
-  DEBUG("Verzeichnis: Neu");
+  dsyslog("Directory: Create");
   cFileInfo *info = new cFileInfo(CurrentDir());
   if(!info->isWriteable())
   {
-    DEBUG("Verzeichnis: Neu: Keine Berechtigung in %s", CurrentDir());
-    OSD_ERRMSG(tr("no Rights to create"));
+    esyslog("Can't create directory, missing rights for %s", CurrentDir());
+    OsdMsg(mtError,tr("Missing rights to create directory!"));
   }
   else
   {
@@ -400,19 +402,19 @@ eOSState cCMDDir::New(eKeys Key)
       {
         char *buffer = NULL;
         asprintf(&buffer, "%s/%s", CurrentDir(), stripspace(Dir));
-        DEBUG("Verzeichnis: Neu: Anlegen: %s", buffer);
+        dsyslog("Create new directory: %s", buffer);
         cFileInfo *info = new cFileInfo(buffer);
         if(info->isExists())
         {
-          DEBUG("Verzeichnis existiert bereits");
-          OSD_WARNMSG(tr("Directory exists"));
+          esyslog("Directory still exists");
+          OsdMsg(mtWarning,tr("Directory exists"));
           FREENULL(buffer);
           DELETENULL(info);
           return osContinue;
         }
         if(cFileCMD::Mkdir(buffer))
         {
-          DEBUG("Verzeichnis anlegen erfolgreich");
+          dsyslog("Directory successfully created");
           LastSelDir(buffer);
           if(!Select)
             OsdObject->SetState(mmsReInit);
@@ -434,7 +436,7 @@ eOSState cCMDDir::New(eKeys Key)
 
 eOSState cCMDDir::Edit(cMainMenuItem *mItem)
 {
-  DEBUG("Verzeichnis: Edit: %s", mItem->FileName());
+  dsyslog("Directory edit: %s", mItem->FileName());
   cFileInfo *info = new cFileInfo(mItem->FileName());
   if(!info->isWriteable())
   {
@@ -442,8 +444,8 @@ eOSState cCMDDir::Edit(cMainMenuItem *mItem)
     info = new cFileInfo(CurrentDir());
     if(!info->isWriteable())
     {
-      DEBUG("Verzeichnis: Edit: Keine Rechte");
-      OSD_ERRMSG(tr("no Rights to rename"));
+      esyslog("Missing proper rights to rename");
+      OsdMsg(mtError,tr("Missing rights to rename!"));
       DELETENULL(info);
       return osContinue;
     }
@@ -462,7 +464,7 @@ eOSState cCMDDir::Edit(cMainMenuItem *mItem)
   {
     if(!strcasecmp(mItem->FileName(), LastSelDir()))
     {
-      DEBUG("Verzeichnis: Edit: Item gefunden: %s", mItem->FileName());
+      dsyslog("Directory: Edit: Item found: %s", mItem->FileName());
       Ins(new cMenuEditStrItem(tr("Rename:"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")),
           true,
           mItem);
@@ -489,19 +491,19 @@ eOSState cCMDDir::Edit(eKeys Key)
       {
         char *buffer = NULL;
         asprintf(&buffer, "%s/%s", CurrentDir(), stripspace(Dir));
-        DEBUG("Verzeichnis: Edit: OK: %s", buffer);
+        dsyslog("Directory: Edit: OK: %s", buffer);
         cFileInfo *info = new cFileInfo(buffer);
         if(info->isExists())
         {
-          DEBUG("Verzeichnis: Edit: Existiert schon");
-          OSD_WARNMSG(tr("Directory exists"));
+          dsyslog("Directory: Edit: exists");
+          OsdMsg(mtWarning,tr("Directory exists"));
           FREENULL(buffer);
           DELETENULL(info);
           return osUnknown;
         }
         if(cFileCMD::Rn(LastSelDir(), buffer))
         {
-          DEBUG("Verzeichnis: Edit: Rename OK");
+          dsyslog("Directory: Edit: Rename OK");
           LastSelDir(buffer);
           OsdObject->SetState(mmsReInit);
         }
@@ -522,10 +524,11 @@ eOSState cCMDDir::Edit(eKeys Key)
 
 // --- cCMDMove -------------------------------------------------------------
 
-cCMDMove::cCMDMove(char *file, cMainMenu *osdobject, bool dir, bool direct)
+cCMDMove::cCMDMove(cImageList &imagelist, const char *file, cMainMenu *osdobject, bool dir, bool direct)
   : cOsdMenu(tr("Move"))
+  , ImageList(imagelist)
 {
-  DEBUG("Verzeichnis: Move: %s");
+  dsyslog("Directory: Move: %s", file);
   File = file ? strdup(file) : NULL;
   OsdObject = osdobject;
   Dir = dir;
@@ -546,14 +549,14 @@ void cCMDMove::SetHelp(void)
 
 void cCMDMove::Build(char *dir)
 {
-  DEBUG("Verzeichnis: Move: Erstelle Verzeichnisliste: %s", dir);
+  dsyslog("Directory: Move: create list: %s", dir);
   if(!dir)
     dir = CurrentDir();
 
   Clear();
 
   cDirHandling *DirHand = new cDirHandling(this, this);
-  SetCurrent(Get(DirHand->Build(dir, true)));
+  SetCurrent(Get(DirHand->Build(dir, true, ImageList)));
   delete(DirHand);
 
   if(Count())
@@ -600,11 +603,11 @@ eOSState cCMDMove::ProcessKey(eKeys Key)
       Build();
       break;
     case kBlue:
-      DEBUG("Verzeichnis: Move: Verschiede in: %s", CurrentDir());
+      dsyslog("Directory: Move to: %s", CurrentDir());
       move = new cFileMoveThread(File, CurrentDir());
       if(move->OK())
       {
-        DEBUG("Verzeichnis: Move: Erfolgreich");
+        dsyslog("Directory: Move successful");
         move->Start();
         cCondWait::SleepMs(1 * 500);
         OsdObject->SetState(mmsReInit);
@@ -626,7 +629,7 @@ eOSState cCMDMove::ProcessKey(eKeys Key)
 
 cCMDImage::cCMDImage(cMainMenu *osdobject)
 {
-  DEBUG("CMDImage");
+  dsyslog("CMDImage");
   File = NULL;
   strcpy(NewFile, "\0");
   OsdObject = osdobject;
@@ -638,9 +641,9 @@ cCMDImage::~cCMDImage(void)
     free(File);
 }
 
-char* cCMDImage::Rename(char *file)
+char* cCMDImage::Rename(const char *file)
 {
-  DEBUG("CMDImage Rename");
+  dsyslog("CMDImage Rename");
   if(file)
   {
     FREENULL(File);
@@ -650,17 +653,17 @@ char* cCMDImage::Rename(char *file)
   return File;
 }
 
-eOSState cCMDImage::Delete(char *file)
+eOSState cCMDImage::Delete(const char *file)
 {
-  DEBUG("lösche DVD '%s'", file);
+  dsyslog("Remove dvd image '%s'", file);
   if(file)
   {
-    if(Interface->Confirm(tr("really delete?")))
+    if(Interface->Confirm(tr("Really delete?")))
     {
       cFileDelThread *del = new cFileDelThread(file);
       if(del->OK())
       {
-        DEBUG("löschen OK");
+        dsyslog("löschen OK");
         del->Start();
         OsdObject->SetState(mmsReInitCur);
       }
@@ -672,24 +675,24 @@ eOSState cCMDImage::Delete(char *file)
   return osBack;
 }
 
-eOSState cCMDImage::Burn(char *file)
+eOSState cCMDImage::Burn(const char *file)
 {
-  DEBUG("DVD Schreiben '%s'", file);
+  dsyslog("Write dvd image '%s'", file);
 
   cFileInfo *info = new cFileInfo(DVDSwitchSetup.DVDWriteScript);
 
   if(!info->isExists())
   {
-    DEBUG("Writescript existiert nicht");
+    esyslog("Missing script to write dvd");
     DELETENULL(info);
-    OSD_ERRMSG(tr("Specified Writescript not exist!"));
+    OsdMsg(mtError,tr("Specified Writescript not exist!"));
     return osContinue;
   }
   if(!info->isExecutable())
   {
-    DEBUG("Writescript lässt sich nicht ausführen");
+    esyslog("Can't execute script to write dvd");
     DELETENULL(info);
-    OSD_ERRMSG(tr("Cannot execute Writescript!"));
+    OsdMsg(mtError,tr("Cannot execute Writescript!"));
     return osContinue;
   }
   
@@ -699,7 +702,7 @@ eOSState cCMDImage::Burn(char *file)
 
   if(Interface->Confirm(tr("Burn Now?")))
   {
-    DEBUG("Starte Burn-Thread");
+    dsyslog("Start Burn-Thread");
     cCMDImageBurnThread *burn = new cCMDImageBurnThread(file, info->Type());
     burn->Start();
   }
@@ -709,25 +712,26 @@ eOSState cCMDImage::Burn(char *file)
 
 // --- cCmdDVDRead ------------------------------------------------------------
 
-cCMDImageRead::cCMDImageRead(void)
+cCMDImageRead::cCMDImageRead(cImageList &imagelist)
   : cOsdMenu(tr("Read DVD"), 14)
+  , ImageList(imagelist)
 {
-  DEBUG("lese DVD");
+  dsyslog("Read DVD Image");
 
   cFileInfo *info = new cFileInfo(DVDSwitchSetup.DVDReadScript);
 
   if(!info->isExists())
   {
-    DEBUG("Readscript existiert nicht");
+    esyslog("Missing script to read dvd");
     DELETENULL(info);
-    OSD_ERRMSG(tr("Specified Readscript not exist!"));
+    OsdMsg(mtError,tr("Specified Readscript not exist!"));
     cRemote::Put(kBack);
   }
   else if(!info->isExecutable())
   {
-    DEBUG("Readscript lässt sich nicht ausführen");
+    esyslog("Can't execute script to write dvd");
     DELETENULL(info);
-    OSD_ERRMSG(tr("Cannot execute Readscript!"));
+    OsdMsg(mtError,tr("Cannot execute Readscript!"));
     cRemote::Put(kBack);
   }
   else
@@ -749,7 +753,7 @@ cCMDImageRead::cCMDImageRead(void)
 
 cCMDImageRead::~cCMDImageRead(void)
 {
-  DEBUG("lesen DVD beendet");
+  dsyslog("Read DVD Image stopped");
 }
 
 void cCMDImageRead::SetHelp(void)
@@ -793,12 +797,12 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
       case kRed:
         if(isempty(File))
         {
-          OSD_ERRMSG(tr("invalid file name for DVD-Image"));
+          OsdMsg(mtError,tr("invalid file name for DVD-Image"));
           return osContinue;
         }
         if(ImgType < 0)
         {
-          OSD_ERRMSG(tr("No Imagetype selected"));
+          OsdMsg(mtError,tr("No Imagetype selected"));
           return osContinue;
         }
         if(isempty(Dir))
@@ -820,8 +824,8 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
           }
           if(buffer[strlen(buffer)-1] == '/')
             buffer[strlen(buffer)-1] = '\0';
-          DEBUG("ReadThread wird gestartet");
-          cCMDImageReadThread *read = new cCMDImageReadThread(File, buffer, ImgType);
+          dsyslog("ReadThread wird gestartet");
+          cCMDImageReadThread *read = new cCMDImageReadThread(File, buffer, ImgType, ImageList);
           FREENULL(buffer);
           read->Start();
           return osBack;
@@ -831,10 +835,10 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
         switch(Current())
         {
           case 1:
-            return AddSubMenu(new cCMDDir(NULL, true, &Dir[0]));
+            return AddSubMenu(new cCMDDir(ImageList, NULL, true, &Dir[0]));
             break;
           case 2:
-            return AddSubMenu(new cMenuSetupDSITypes(true, &ImgType, &ImgTypeTxt[0]));
+            return AddSubMenu(new cMenuSetupDSITypes(ImageList, true, &ImgType, &ImgTypeTxt[0]));
             break;
           default:
             break;

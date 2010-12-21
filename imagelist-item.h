@@ -17,17 +17,17 @@ class cImageListItem : public cListObject
 
     void MakeSetupString(void)
     {
-      DEBUG("Neuer SetupString");
+      dsyslog("Neuer SetupString");
       FREENULL(SString);
       asprintf(&SString, "%s|%s|%i|%s|%i", LName, SName, (int)fType, Value, HideExt);
-      DEBUG("...%s", SString);
+      dsyslog("...%s", SString);
     };
 
-    void Debug(void);
+    void debug(void);
   public:
-    cImageListItem(char *lname, char *sname, eFileInfo type, char *value, bool hide);
+    cImageListItem(const char *lname, const char *sname, eFileInfo type,const char *value, bool hide);
     ~cImageListItem(void);
-    void Edit(char *lname, char *shortname, eFileInfo type, char *value, bool hide);
+    void Edit(const char *lname,const char *shortname, eFileInfo type,const char *value, bool hide);
 
     char *GetLName(void) { return LName; };
     char *GetSName(void) { return SName; };
