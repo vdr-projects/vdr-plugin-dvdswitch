@@ -16,7 +16,7 @@ VERSION = $(shell grep 'static const char \*VERSION *=' $(PLUGIN).c | awk '{ pri
 ### The C++ compiler and options:
 
 CXX      ?= g++
-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
+CXXFLAGS ?= -g -O2 -Wall -Woverloaded-virtual -Wno-parentheses
 
 ### The directory environment:
 
@@ -49,7 +49,8 @@ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o helpers.o tools.o imagelist-item.o imagelist.o dvdlist-item.o dvdlist.o dvdplugin.o menu-item.o menu.o setup.o setup-itypes.o commands.o
+OBJS = $(PLUGIN).o helpers.o tools.o imagelist-item.o imagelist.o dvdlist-item.o \
+        dvdlist.o dvdplugin.o menu-item.o menu.o setup.o setup-itypes.o commands.o
 
 ### Implicit rules:
 
@@ -77,7 +78,7 @@ I18Npot   = $(PODIR)/$(PLUGIN).pot
 	msgfmt -c -o $@ $<
 
 $(I18Npot): $(wildcard *.c)
-	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address=' ' -o $@ $^
+	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='<see README>' -o $@ $^
 
 %.po: $(I18Npot)
 	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
@@ -96,7 +97,7 @@ all: libvdr-$(PLUGIN).so i18n
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
+	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
@@ -107,4 +108,4 @@ dist: clean
 	@echo Distribution package created as $(PACKAGE).tgz
 
 clean:
-	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot

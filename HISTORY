@@ -1,6 +1,11 @@
 VDR Plugin 'dvdswitch' Revision History
 ---------------------------------------
 
+2010-12-21:
+- Add french translation from http://www.vdr-portal.de/board/thread.php?postid=488211#post488211
+- Fix some GCC warnings (asprintf, realpath)
+- Use Make.global - Make sure that necessary options are included
+
 2009-10-03: Version 0.1.5
 - Fix some GCC-4.4 warnings
 
