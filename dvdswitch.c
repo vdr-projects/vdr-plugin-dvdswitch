@@ -17,7 +17,7 @@
 #include "imagelist.h"
 //#include "dvdlist.h"
 
-static const char *VERSION        = "0.1.2";
+static const char *VERSION        = "0.1.3";
 static const char *DESCRIPTION    = "allowed to play DVD-Images";
 //static const char *MAINMENUENTRY  = "DVDSwitch";
 
@@ -37,7 +37,7 @@ public:
   virtual void Stop(void);
   virtual void Housekeeping(void);
   //virtual const char *MainMenuEntry(void) { return tr(MAINMENUENTRY); }
-  virtual const char *MainMenuEntry(void) { return DVDSwitchSetup.MenuName; }
+  virtual const char *MainMenuEntry(void) { return DVDSwitchSetup.HideMenuEntry ? NULL : DVDSwitchSetup.MenuName; }
   virtual cOsdObject *MainMenuAction(void);
   virtual cMenuSetupPage *SetupMenu(void);
   virtual bool SetupParse(const char *Name, const char *Value);
