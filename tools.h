@@ -46,8 +46,9 @@ class cFileDelThread : public cThread
         Ok = true;
         if(file)
         {
-          asprintf(&File, "%s.sdel", file);
-          cFileCMD::Rn(file, File);
+          if(0 < asprintf(&File, "%s.sdel", file)) {
+            cFileCMD::Rn(file, File);
+          }
         }
       }
     }
@@ -80,9 +81,10 @@ class cFileMoveThread : public cThread
       if(FileName && File && Dest)
       {
         char *buffer = NULL;
-        asprintf(&buffer, "%s/%s", Dest, FileName);
-        cFileCMD::Rn(File, buffer);
-        free(buffer);
+        if(0 < asprintf(&buffer, "%s/%s", Dest, FileName)) {
+          cFileCMD::Rn(File, buffer);
+          free(buffer);
+        }
       }
       delete(this);
     };
@@ -104,8 +106,9 @@ class cFileMoveThread : public cThread
           cFileInfo *info = new cFileInfo(file);
           FileName = strdup(info->FileName());
           DELETENULL(info);
-          asprintf(&File, "%s.smove", file);
-          cFileCMD::Rn(file, File);
+          if(0 < asprintf(&File, "%s.smove", file)) {
+            cFileCMD::Rn(file, File);
+          }
         }
         Dest = dest ? strdup(dest) : NULL;
       }

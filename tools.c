@@ -15,9 +15,10 @@ cDirList::cDirList(cImageList &ImageList)
   cTokenizer *token = new cTokenizer(ImageList.GetDirContains(), "@");
   for(int i = 1; i <= token->Count(); i++)
   {
-    asprintf(&buffer, "^%s$", token->GetToken(i));
-    OptExclude(buffer);
-    FREENULL(buffer);
+    if(0 < asprintf(&buffer, "^%s$", token->GetToken(i))) {
+      OptExclude(buffer);
+      FREENULL(buffer);
+    }
   }
 
   OptSort((eFileList)DVDSwitchSetup.SortMode);

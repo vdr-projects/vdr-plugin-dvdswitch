@@ -39,9 +39,10 @@ bool cDVDList::Load(const char *dir, eFileList smode, bool sub)
     char *extexp = NULL;
     for(i = 1; i <= token->Count(); i++)
     {
-      asprintf(&extexp, "%s$", token->GetToken(i));
-      fList->OptInclude(extexp, tFile);
-      FREENULL(extexp);
+      if(0 < asprintf(&extexp, "%s$", token->GetToken(i))) {
+        fList->OptInclude(extexp, tFile);
+        FREENULL(extexp);
+      }
     }
     delete(token);
   }

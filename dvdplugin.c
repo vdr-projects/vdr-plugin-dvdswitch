@@ -67,59 +67,59 @@ void cDVDPlugin::DetectDevice(void)
   char *output = NULL;
   char *dvd = NULL;
 
-  asprintf(&cmd, "ps -p %i -o cmd --no-header", getpid());
-  dsyslog("Commando: %s", cmd);
+  if(0 < asprintf(&cmd, "ps -p %i -o cmd --no-header", getpid())) {
+    dsyslog("Commando: %s", cmd);
 
-  FILE *p = popen(cmd, "r");
-  if(p)
-  {
-#if VDRVERSNUM >= 10318
-    cReadLine rl;
-    output = rl.Read(p);
-#else
-    output = readline(p);
-#endif
-    pclose(p);
-  }
-
-  cTokenizer *token = new cTokenizer(output, " ");
-  for(int i = 1; i <= token->Count(); i++)
-  {
-    if(RegIMatch(token->GetToken(i), "^--plugin=dvd") ||
-       (RegIMatch(token->GetToken(i - 1), "^-P$") &&
-        RegIMatch(token->GetToken(i), "^dvd$")))
+    FILE *p = popen(cmd, "r");
+    if(p)
     {
-      if(RegIMatch(token->GetToken(i + 1), "^-C$") &&
-         token->GetToken(i + 2))
+  #if VDRVERSNUM >= 10318
+      cReadLine rl;
+      output = rl.Read(p);
+  #else
+      output = readline(p);
+  #endif
+      pclose(p);
+    }
+
+    cTokenizer *token = new cTokenizer(output, " ");
+    for(int i = 1; i <= token->Count(); i++)
+    {
+      if(RegIMatch(token->GetToken(i), "^--plugin=dvd") ||
+         (RegIMatch(token->GetToken(i - 1), "^-P$") &&
+          RegIMatch(token->GetToken(i), "^dvd$")))
       {
-        dvd = strdup(token->GetToken(i + 2));
-        break;
-      }
-      if(RegIMatch(token->GetToken(i + 1), "^--dvd="))
-      {
-        char *p = strchr(token->GetToken(i + 1), '=');
-        p++;
-        dvd = strdup(p);
-        break;
+        if(RegIMatch(token->GetToken(i + 1), "^-C$") &&
+           token->GetToken(i + 2))
+        {
+          dvd = strdup(token->GetToken(i + 2));
+          break;
+        }
+        if(RegIMatch(token->GetToken(i + 1), "^--dvd="))
+        {
+          const char *p = strchr(token->GetToken(i + 1), '=');
+          p++;
+          dvd = strdup(p);
+          break;
+        }
       }
     }
+    DELETENULL(token);
+    
+    if(dvd)
+    {
+      isyslog("Used DVD Device: %s", dvd);
+      DVDSwitchSetup.SetDVDDevice(dvd);
+      free(dvd);
+    }
+    else
+    {
+      isyslog("Use Default-DVD Device /dev/dvd");
+      DVDSwitchSetup.SetDVDDevice("/dev/dvd");
+    }
+    
+    free(cmd);
   }
-  DELETENULL(token);
-  
-  if(dvd)
-  {
-    isyslog("Used DVD Device: %s", dvd);
-    DVDSwitchSetup.SetDVDDevice(dvd);
-  }
-  else
-  {
-    isyslog("Use Default-DVD Device /dev/dvd");
-    DVDSwitchSetup.SetDVDDevice("/dev/dvd");
-  }
-
-  free(cmd);
-  free(dvd);
-  //free(output);
 }
 
 void cDVDPlugin::SetLink(void)
@@ -127,19 +127,21 @@ void cDVDPlugin::SetLink(void)
   int argc = 2;
   char *argv[2] = { NULL, NULL };
 
-  asprintf(&argv[0], "%s", "dvd");
-  asprintf(&argv[1], "--dvd=%s", DVDSwitchSetup.DVDLink);
+  if(0 < asprintf(&argv[0], "%s", "dvd")) {
+    if(0 < asprintf(&argv[1], "--dvd=%s", DVDSwitchSetup.DVDLink)) {
 
-  cPlugin *plugin = cPluginManager::GetPlugin("dvd");
+      cPlugin *plugin = cPluginManager::GetPlugin("dvd");
 
-  if(plugin)
-  {
-    optind = 0; //reset for getopt
-    plugin->ProcessArgs(argc, argv);
+      if(plugin)
+      {
+        optind = 0; //reset for getopt
+        plugin->ProcessArgs(argc, argv);
+      }
+
+      free(argv[1]);
+    }
+    free(argv[0]);
   }
-
-  free(argv[0]);
-  free(argv[1]);
 }
 
 void cDVDPlugin::Start(char *image)
@@ -164,10 +166,11 @@ void cDVDPlugin::ChangeLink(char *target)
     char *cmd = NULL;
     int rc = 0;
 
-    asprintf(&cmd, LINK, target, DVDSwitchSetup.DVDLink);
-    dsyslog("Change link: %s", cmd);
-    rc = system(cmd);
-    dsyslog("Change link got: %i", rc);
-    free(cmd);
+    if(0 < asprintf(&cmd, LINK, target, DVDSwitchSetup.DVDLink)) {
+      dsyslog("Change link: %s", cmd);
+      rc = system(cmd);
+      dsyslog("Change link got: %i", rc);
+      free(cmd);
+    }
   }
 }

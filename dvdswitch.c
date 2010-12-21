@@ -19,7 +19,7 @@
 #error "VDR-1.6.0 API version or greater is required!"
 #endif
 
-static const char *VERSION        = "0.1.4";
+static const char *VERSION        = "0.1.5";
 static const char *DESCRIPTION    = tr("Allowed to play DVD-Images");
 //static const char *MAINMENUENTRY  = tr("DVDSwitch");
 

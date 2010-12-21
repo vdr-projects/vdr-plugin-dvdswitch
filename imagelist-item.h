@@ -17,10 +17,10 @@ class cImageListItem : public cListObject
 
     void MakeSetupString(void)
     {
-      dsyslog("Neuer SetupString");
       FREENULL(SString);
-      asprintf(&SString, "%s|%s|%i|%s|%i", LName, SName, (int)fType, Value, HideExt);
-      dsyslog("...%s", SString);
+      if(0 < asprintf(&SString, "%s|%s|%i|%s|%i", LName, SName, (int)fType, Value, HideExt)) {
+        dsyslog("...%s", SString);
+      }
     };
 
     void debug(void);

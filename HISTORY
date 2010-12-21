@@ -1,6 +1,9 @@
 VDR Plugin 'dvdswitch' Revision History
 ---------------------------------------
 
+2009-10-03: Version 0.1.5
+- Fix some GCC-4.4 warnings
+
 2009-10-03: Version 0.1.4
 - Update to vdr 1.6.0
 

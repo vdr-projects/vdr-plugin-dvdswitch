@@ -424,10 +424,14 @@ cFileListItem::cFileListItem(const char *dir, const char *file)
 {
   if(file && !isempty(file) && dir && !isempty(dir))
   {
-    if(dir[strlen(dir) - 1] == '/')
-      asprintf(&File, "%s%s", dir, file);
-    else
-      asprintf(&File, "%s/%s", dir, file);
+    if(dir[strlen(dir) - 1] == '/') {
+      if(0 >= asprintf(&File, "%s%s", dir, file))
+        return;
+    }
+    else {
+      if(0 >= asprintf(&File, "%s/%s", dir, file))
+        return;
+    }
   }
   else
     File = NULL;
@@ -514,9 +518,10 @@ bool cFileList::Read(const char *dir, bool withsub)
          CheckType(dir, DirData->d_name, tDir) &&
          !RegIMatch(DirData->d_name, "^\\.{1,2}$"))
       {
-        asprintf(&buffer, "%s/%s", dir, DirData->d_name);
-        Read(buffer, withsub);
-        FREENULL(buffer);
+        if(0 < asprintf(&buffer, "%s/%s", dir, DirData->d_name)) { 
+          Read(buffer, withsub);
+          FREENULL(buffer);
+        }
       }
     }
     ret = true;
@@ -541,7 +546,8 @@ void cFileList::SortIn(const char *dir, const char *file)
     case sDesc:
       if(Item)
       {
-        asprintf(&NewItem, "%s/%s", dir, file);
+        if(0 >= asprintf(&NewItem, "%s/%s", dir, file))
+          break;
         NewItemInfo = SortToFilename ? new cFileInfo(NewItem) : NULL;
         while(Item)
         {
@@ -618,15 +624,14 @@ bool cFileList::CheckType(const char *dir, const char *file, eFileInfo type)
 
   char *buffer = NULL;
 
-  asprintf(&buffer, "%s/%s", dir, file);
+  if(0 < asprintf(&buffer, "%s/%s", dir, file)) {
+    cFileInfo *info = new cFileInfo(buffer);
+    if(info->Type() == type)
+      ret = true;
+    delete(info);
 
-  cFileInfo *info = new cFileInfo(buffer);
-  if(info->Type() == type)
-    ret = true;
-  delete(info);
-
-  free(buffer);
-
+    free(buffer);
+  }
   return ret;
 }
 
@@ -670,9 +675,10 @@ bool cFileList::DirIsIn(const char *file, const char *strings)
     cTokenizer *token = new cTokenizer(strings, "@");
     for(int i = 1; i <= token->Count(); i++)
     {
-      asprintf(&buffer, "^%s$", token->GetToken(i));
-      fList->OptInclude(buffer);
-      free(buffer);
+      if(0 < asprintf(&buffer, "^%s$", token->GetToken(i))) {
+        fList->OptInclude(buffer);
+        free(buffer);
+      }
     }
     DELETENULL(token);
 

@@ -32,8 +32,11 @@ void cImageListItem::Edit(const char *lname, const char *sname, eFileInfo type, 
   LName = lname ? strdup(lname) : NULL;
   SName = sname ? strdup(sname) : NULL;
 
-  if(type == tFile && value && value[0] != '.')
-    asprintf(&Value, ".%s", value);
+  if(type == tFile && value && value[0] != '.') {
+    if(0 >= asprintf(&Value, ".%s", value)) {
+      return;
+    }
+  }
   else
     Value = value ? strdup(value) : NULL;
 
