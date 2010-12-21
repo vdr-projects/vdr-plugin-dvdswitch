@@ -19,11 +19,10 @@ class cImageListItem : public cListObject
     {
       FREENULL(SString);
       if(0 < asprintf(&SString, "%s|%s|%i|%s|%i", LName, SName, (int)fType, Value, HideExt)) {
-        dsyslog("...%s", SString);
+        dsyslog("dvdswitch: ...%s", SString);
       }
     };
 
-    void debug(void);
   public:
     cImageListItem(const char *lname, const char *sname, eFileInfo type,const char *value, bool hide);
     ~cImageListItem(void);

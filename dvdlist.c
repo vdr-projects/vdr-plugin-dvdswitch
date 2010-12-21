@@ -4,8 +4,6 @@
 
 bool cDVDList::Create(const char *dir, const char *exts, const char *dirs, eFileList smode, bool sub)
 {
-  dsyslog("DVDList: %s, %s", exts, dirs);
-
   Clear();
   FREENULL(DVDExts);
   FREENULL(DVDDirs);
@@ -21,7 +19,6 @@ bool cDVDList::Create(const char *dir, const char *exts, const char *dirs, eFile
 
 bool cDVDList::Load(const char *dir, eFileList smode, bool sub)
 {
-  dsyslog("DVDList: Load");
   bool ret = false;
   int i = 0;
 

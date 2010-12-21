@@ -19,7 +19,7 @@
 #error "VDR-1.6.0 API version or greater is required!"
 #endif
 
-static const char *VERSION        = "0.1.5";
+static const char *VERSION        = "0.1.6";
 static const char *DESCRIPTION    = tr("Allowed to play DVD-Images");
 //static const char *MAINMENUENTRY  = tr("DVDSwitch");
 
@@ -66,12 +66,12 @@ const char *cPluginDvdswitch::CommandLineHelp(void)
 {
      //12345678901234567890123456789012345678901234567890123456789012345678901234567890|
   return
-      "  -r SCRIPT,     --readscript=SCRIPT   SCRIPT = scriptname with path for reading"
-      "                                       DVD as a ISO Image File"
-      "  -w SCRIPT,     --writescript=SCRIPT  SCRIPT = scriptname with path to writing"
-      "                                       selected DVD Image"
-      "  -i PATH,       --imagedir=PATH       Path to DVD-Images. This Option can set"
-      "                                       in SetupMenu optional";
+      "  -r SCRIPT,     --readscript=SCRIPT   SCRIPT = scriptname with path for reading\n"
+      "                                       DVD as a ISO Image File\n"
+      "  -w SCRIPT,     --writescript=SCRIPT  SCRIPT = scriptname with path to writing\n"
+      "                                       selected DVD Image\n"
+      "  -i PATH,       --imagedir=PATH       Path to DVD-Images. This Option can set\n"
+      "                                       in SetupMenu optional\n";
 }
 
 bool cPluginDvdswitch::ProcessArgs(int argc, char *argv[])
@@ -112,7 +112,7 @@ bool cPluginDvdswitch::ProcessArgs(int argc, char *argv[])
 bool cPluginDvdswitch::Initialize(void)
 {
   // Initialize any background activities the plugin shall perform.
-  dsyslog("Initialize plugin");
+  dsyslog("dvdswitch: Initialize plugin");
 
   DVDSwitchSetup.SetConfDir(ConfigDirectory(Name()));
   cDVDPlugin::Init();
@@ -181,18 +181,18 @@ cString cPluginDvdswitch::SVDRPCommand(const char *Command, const char *Option, 
 
 bool cPluginDvdswitch::CheckError(void)
 {
-  dsyslog("Check ImageDir");
+  dsyslog("dvdswitch: Check ImageDir");
   if(!DirectoryOk(DVDSwitchSetup.ImageDir))
   {
-    esyslog("Image Directory  '%s' not readable", DVDSwitchSetup.ImageDir);
+    esyslog("dvdswitch: Image Directory '%s' not readable", DVDSwitchSetup.ImageDir);
     OsdMsg(mtError,tr("Image Directory not readable or not exist"));
     return true;
   }
 
-  dsyslog("Check DVD Plugin");
+  dsyslog("dvdswitch: Check DVD Plugin");
   if(!cPluginManager::GetPlugin("dvd"))
   {
-    esyslog("DVD-Plugin not found! Function deactivated!");
+    esyslog("dvdswitch: DVD-Plugin not found! Function deactivated!");
     OsdMsg(mtInfo,tr("DVD-Plugin not found! Function deactivated!"));
   } else
     DVDSwitchSetup.DVDPluginExist = true;

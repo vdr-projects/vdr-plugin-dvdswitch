@@ -153,48 +153,49 @@ class cCMDImageReadThread : public cThread
         int step = 0;
         cTokenizer *token = NULL;
         char buffer[MaxFileName];
-        realpath(DVDSwitchSetup.DVDLinkOrg, buffer);
+        if(realpath(DVDSwitchSetup.DVDLinkOrg, buffer)) {
+          while(!mountpoint && step < 2) {
+            step++;
+            if(0 < asprintf(&cmd,
+                     "cat /etc/fstab | grep -e \"%s\" | grep -e \"^[^#]\"",
+                     step == 1 ? DVDSwitchSetup.DVDLinkOrg : buffer)) {
+              dsyslog("ReadThread call: %s", cmd);
 
-        while(!mountpoint && step < 2)
-        {
-          step++;
-          asprintf(&cmd,
-                   "cat /etc/fstab | grep -e \"%s\" | grep -e \"^[^#]\"",
-                   step == 1 ? DVDSwitchSetup.DVDLinkOrg : buffer);
-          dsyslog("ReadThread call: %s", cmd);
-
-          FILE *p = popen(cmd, "r");
-          if(p)
-          {
+              FILE *p = popen(cmd, "r");
+              if(p)
+              {
 #if VDRVERSNUM >= 10318
-            cReadLine rl;
-            output = rl.Read(p);
+                cReadLine rl;
+                output = rl.Read(p);
 #else
-            output = readline(p);
+                output = readline(p);
 #endif
-            pclose(p);
+                pclose(p);
+              }
+              token = new cTokenizer(output, " ");
+              if(token->Count() > 1) {
+                char* s = strdup(token->GetToken(2));
+                mountpoint = stripspace(s);
+              }
+              DELETENULL(token);
+            }
+            FREENULL(cmd);
           }
-          token = new cTokenizer(output, " ");
-          if(token->Count() > 1) {
-            char* s = strdup(token->GetToken(2));
-            mountpoint = stripspace(s);
+          if(0 < asprintf(&cmd,
+                    "'%s' '%s' '%s' '%s' '%s' '%s'",
+                    DVDSwitchSetup.DVDReadScript,
+                    Dir,
+                    File,
+                    buffer,
+                    mountpoint,
+                    (FileType == tFile) ? "IMAGE" : "DIR")) {
+            dsyslog("ReadThread call: %s", cmd);
+            int rc = system(cmd);
+            dsyslog("ReadThread return value: %i", rc);
+            FREENULL(cmd);
           }
-          DELETENULL(token);
+          FREENULL(mountpoint);
         }
-        FREENULL(cmd);
-        asprintf(&cmd,
-                  "'%s' '%s' '%s' '%s' '%s' '%s'",
-                  DVDSwitchSetup.DVDReadScript,
-                  Dir,
-                  File,
-                  buffer,
-                  mountpoint,
-                  (FileType == tFile) ? "IMAGE" : "DIR");
-        dsyslog("ReadThread call: %s", cmd);
-        int rc = system(cmd);
-        dsyslog("ReadThread return value: %i", rc);
-        FREENULL(cmd);
-        FREENULL(mountpoint);
       }
       delete(this);
     };
@@ -209,8 +210,10 @@ class cCMDImageReadThread : public cThread
       cImageListItem *item = ImageList.Get(imgtype);
       if(imgtype >= 0 && file && dir)
       {
-        if(item->GetFType() == tFile)
-          asprintf(&File, "%s%s", file, item->GetValue());
+        if(item->GetFType() == tFile) {
+          if(0 >= asprintf(&File, "%s%s", file, item->GetValue()))
+            return;
+        }
         else
           File = strdup(file);
         Dir = strdup(dir);
@@ -237,17 +240,18 @@ class cCMDImageBurnThread : public cThread
       {
         dsyslog("BurnThread executed");
         char *cmd;
-        asprintf(&cmd,
+        if(0 < asprintf(&cmd,
                   "'%s' '%s' '%s'",
                   DVDSwitchSetup.DVDWriteScript,
                   File,
-                  FileType == tFile ? "IMAGE" : "DIR");
-        dsyslog("BurnThread call: %s", cmd);
-        int rc = system(cmd);
-        dsyslog("BurnThread return value: %i", rc);
-        FREENULL(cmd);
+                  FileType == tFile ? "IMAGE" : "DIR")) {
+          dsyslog("BurnThread call: %s", cmd);
+          int rc = system(cmd);
+          dsyslog("BurnThread return value: %i", rc);
+          FREENULL(cmd);
+        }
       }
-        delete(this);
+      delete(this);
     };
   public:
     cCMDImageBurnThread(const char *file, eFileInfo type)

@@ -13,7 +13,6 @@ cImageList::~ cImageList(void)
 
 void cImageList::Init(void)
 {
-  dsyslog("Init ImageList");
   if(!Setup)
   {
     Add(new cImageListItem(tr("Directory with 'VIDEO_TS' Folder"),
@@ -31,8 +30,6 @@ void cImageList::Init(void)
 
 void cImageList::AddItem(const char *item)
 {
-  dsyslog("Neues Item soll hinzugefügt werden: %s", item);
-
   if (!isempty(item))
   {
     cTokenizer *token = new cTokenizer(item, "|");
@@ -48,8 +45,6 @@ void cImageList::AddItem(const char *item)
 
 void cImageList::AddSetup(const char *value)
 {
-  dsyslog("Erhalte SetupString: %s",value);
-
   Setup = true;
   Clear();
 
@@ -64,14 +59,11 @@ void cImageList::AddSetup(const char *value)
 
 char *cImageList::GetSetupString(void)
 {
-  dsyslog("Erstelle SetupString");
-
   SString = NULL;
   cImageListItem *item = First();
 
   while(item)
   {
-    dsyslog("Füge hinzu: %s", item->SaveString());
     SString += item->SaveString();
     SString += "@";
     item = Next(item);
@@ -82,17 +74,13 @@ char *cImageList::GetSetupString(void)
 
 char *cImageList::GetExtensions(void)
 {
-  dsyslog("Erstelle Liste aller Extensions");
-
   Ext = NULL;
   cImageListItem *item = First();
 
   while(item)
   {
-    dsyslog("Item ist vom Type: %i", (int) item->GetFType());
     if(item->GetFType() == tFile)
     {
-      dsyslog("Item wird hinzugefügt: %s", item->GetValue());
       Ext += item->GetValue();
       Ext += "@";
     }
@@ -104,17 +92,13 @@ char *cImageList::GetExtensions(void)
 
 char *cImageList::GetHideExtensions(void)
 {
-  dsyslog("Erstelle Liste aller Extensions die ausgeblendet werden sollen");
-
   HideExt = NULL;
   cImageListItem *item = First();
 
   while(item)
   {
-    dsyslog("Item ist vom Type: %i", (int) item->GetFType());
     if(item->GetFType() == tFile && item->IsHide())
     {
-      dsyslog("Item wird hinzugefügt: %s", item->GetValue());
       HideExt += item->GetValue();
       HideExt += "@";
     }
@@ -126,17 +110,13 @@ char *cImageList::GetHideExtensions(void)
 
 char *cImageList::GetDirContains(void)
 {
-  dsyslog("Erstelle Liste aller Verzeichnisinhalte");
-
   DirIn = NULL;
   cImageListItem *item = First();
 
   while(item)
   {
-    dsyslog("Item ist vom Type: %i", (int) item->GetFType());
     if(item->GetFType() == tDir)
     {
-      dsyslog("Item wird hinzugefügt: %s", item->GetValue());
       DirIn += item->GetValue();
       DirIn += "@";
     }
@@ -148,8 +128,6 @@ char *cImageList::GetDirContains(void)
 
 char *cImageList::GetShortName(const char *file)
 {
-  dsyslog("Shortname wird gesucht: %s", file);
-
   Short = NULL;
   cImageListItem *item = First();
   cFileInfo *info = new cFileInfo(file);

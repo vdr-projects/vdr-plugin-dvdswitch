@@ -1,4 +1,5 @@
 #include "helpers.h"
+#include <dirent.h>
 
 // --- OSD Message Helpers -----------------------------------
 
@@ -20,6 +21,29 @@ void OsdMsg(eMessageType Type, const char *Msg)
       break;
   }
 #endif
+}
+
+void OSDErrorNumMsg(int err, const char* szDef) 
+{	
+    char szErr[128];
+    int nErr = err;
+    szErr[sizeof(szErr)-1] = '\0';
+    if(0 != strerror_r(nErr,szErr,sizeof(szErr)-1)) {
+        szErr[0] = '\0';
+    } 
+    esyslog(szErr[0] != '\0'?szErr:szDef);
+    OsdMsg(mtError, szErr[0] != '\0'?szErr:szDef);
+}
+
+void SysLogErrorNumMsg(int err, const char* szDef) 
+{	
+    char szErr[128];
+    int nErr = err;
+    szErr[sizeof(szErr)-1] = '\0';
+    if(0 != strerror_r(nErr,szErr,sizeof(szErr)-1)) {
+        szErr[0] = '\0';
+    } 
+    esyslog(szErr[0] != '\0'?szErr:szDef);
 }
 
 void ChangeChars(char *name, char *chars)
@@ -70,7 +94,6 @@ bool RegIMatch(const char *string, const char *pattern)
 void cTokenizer::Tokenize(bool trim)
 {
   Clear();
-  dsyslog("String wird in Token zerlegt");
   char *buffer = NULL;
   char *token = NULL;
   char *tok_pointer;
@@ -83,7 +106,6 @@ void cTokenizer::Tokenize(bool trim)
       token;
       token = strtok_r(NULL, Delim, &tok_pointer))
   {
-    dsyslog("Token gefunden: %s", token);
     if(!trim)
       Add(new cToken(token));
     else
@@ -97,7 +119,6 @@ void cTokenizer::Tokenize(bool trim)
 
 cFileInfo::cFileInfo(const char *file)
 {
-  dsyslog("FileInfo: %s", file);
   File = (file && !isempty(file)) ? strdup(file) : NULL;
 
   if(File && File[strlen(File) - 1] == '/')
@@ -129,8 +150,6 @@ char *cFileInfo::Path(void)
     strn0cpy(buffer, File, len);
   }
 
-  dsyslog("FileInfo: Pfad: %s", buffer);
-
   return buffer;
 }
 
@@ -145,10 +164,7 @@ char *cFileInfo::FileName(void)
     buffer = strdup(p);
   }
 
-  dsyslog("FileInfo: FileName: %s", buffer);
-
   return buffer;
-
 }
 
 char *cFileInfo::FileNameWithoutExt(void)
@@ -175,8 +191,6 @@ char *cFileInfo::FileNameWithoutExt(void)
   free(ext);
   free(filename);
 
-  dsyslog("FileInfo: FileNameWithoutExt: %s", buffer);
-
   return buffer;
 }
 
@@ -193,8 +207,6 @@ char *cFileInfo::Extension(bool withPoint)
       buffer = strdup(p);
   }
 
-  dsyslog("FileInfo: Extension: %s", buffer);
-  
   return buffer;
 }
 
@@ -503,22 +515,22 @@ bool cFileList::Read(const char *dir, bool withsub)
   bool ret = false;
   char *buffer = NULL;
 
-  struct dirent *DirData = NULL;
+  struct dirent *e;
 
   cReadDir Dir(dir);
   if(Dir.Ok())
   {
-    while((DirData = Dir.Next()) != NULL)
+    while((e = Dir.Next()) != NULL)
     {
-      if(CheckIncludes(dir, DirData->d_name)  &&
-         !CheckExcludes(dir, DirData->d_name) &&
-         CheckType(dir, DirData->d_name, Type))
-        SortIn(dir, DirData->d_name);
+      if(CheckIncludes(dir, e->d_name)  &&
+         !CheckExcludes(dir, e->d_name) &&
+         CheckType(dir, e->d_name, Type))
+        SortIn(dir, e->d_name);
       if(withsub &&
-         CheckType(dir, DirData->d_name, tDir) &&
-         !RegIMatch(DirData->d_name, "^\\.{1,2}$"))
+         CheckType(dir, e->d_name, tDir) &&
+         !RegIMatch(e->d_name, "^\\.{1,2}$"))
       {
-        if(0 < asprintf(&buffer, "%s/%s", dir, DirData->d_name)) { 
+        if(0 < asprintf(&buffer, "%s/%s", dir, e->d_name)) { 
           Read(buffer, withsub);
           FREENULL(buffer);
         }

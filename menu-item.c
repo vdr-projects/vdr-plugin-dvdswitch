@@ -8,8 +8,6 @@
 
 cMainMenuItem::cMainMenuItem(eMainMenuItem itype, cImageList &ImageList, const char *file)
 {
-  dsyslog("Neues MainMenuItem: %i, %s", (int)itype, file);
-
   iType = itype;
   File = file ? strdup(file) : NULL;
 
@@ -18,8 +16,6 @@ cMainMenuItem::cMainMenuItem(eMainMenuItem itype, cImageList &ImageList, const c
   SetText(OSD, true);
   if(iType == iCat)
     SetSelectable(false);
-
-  dsyslog("OSDName: %s", OSD);
 }
 
 cMainMenuItem::~ cMainMenuItem()

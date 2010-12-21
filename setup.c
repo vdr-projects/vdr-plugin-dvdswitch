@@ -26,7 +26,7 @@ cDVDSwitchSetup::cDVDSwitchSetup(void)
   HideTypeCol = 0;
   CountTypCol = 35;
   HideImgSizeCol = 0;
-  asprintf(&CatLineChars, "%s", "-_.:#+*!%<>");
+  CatLineChars = strdup("-_.:#+*!%<>"); 
   CatLineChar = CatLineChars[0];
   CharCountBeforeCat = 3;
   SpacesBeforeAfterCat = 1;
@@ -400,7 +400,7 @@ eOSState cMenuSetupDVDSwitch::ProcessKey(eKeys Key)
 
 void cMenuSetupDVDSwitch::Store(void)
 {
-  dsyslog("STORE Setup");
+  dsyslog("dvdswitch: store setup");
 
   DVDSwitchSetup = data;
 

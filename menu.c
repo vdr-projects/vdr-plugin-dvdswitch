@@ -45,12 +45,13 @@ void cMainMenu::SetMenuTitle(void)
   {
     int mByte = FreeDiskSpaceMB(DVDSwitchSetup.ImageDir);
     double gByte = (double)((int)((double)mByte / 1024 * 10)) / 10;
-    asprintf(&title,
+    if(0 >= asprintf(&title,
              "%s - %4.1f GB (DVD5: %i / DVD9: %i)",
              DVDSwitchSetup.MenuName,
              gByte,
              (int)(gByte / 4.7),
-             (int)(gByte / 8.5));
+             (int)(gByte / 8.5)))
+      return;
   } else
     title = DVDSwitchSetup.MenuName ? strdup(DVDSwitchSetup.MenuName) : NULL;
 
@@ -60,8 +61,6 @@ void cMainMenu::SetMenuTitle(void)
 
 void cMainMenu::Build(const char *dir)
 {
-  dsyslog("Build MainMenu von %s", dir);
-
   SetMenuTitle();
   if(!DVDSwitchSetup.HideImgSizeCol)
     SetCols(DVDSwitchSetup.CountTypCol, 10);
@@ -85,8 +84,6 @@ void cMainMenu::Build(const char *dir)
       break;
   }
 
-  dsyslog("First Selectable ist: %i", FirstSelectable);
-
   if(FirstSelectable >= 0)
   {
     cMainMenuItem *mmItem = (cMainMenuItem*)Get(FirstSelectable);
@@ -101,14 +98,11 @@ void cMainMenu::Build(const char *dir)
 
 void cMainMenu::BuildDisp0(const char *dir)
 {
-  dsyslog("Bilde Menu nach DisplayMode 0");
-
   cDVDList *DVDList = new cDVDList;
   cMainMenuItem *mItem = NULL;
 
   if(DVDSwitchSetup.DisplayDVDDevice)
   {
-    dsyslog("Füge Eintrag für das DVD-Device hinzu");
     Add(new cMainMenuItem(iDevice,ImageList));
     if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
       FirstSelectable = 0;
@@ -120,7 +114,6 @@ void cMainMenu::BuildDisp0(const char *dir)
                      (eFileList)DVDSwitchSetup.SortMode,
                      true))
   {
-    dsyslog("DVDList erstellt");
     cDVDListItem *item = DVDList->First();
     while(item)
     {
@@ -156,7 +149,6 @@ void cMainMenu::BuildDisp1(const char *dir)
     case 0: // Image-Type
       if(DVDSwitchSetup.DisplayDVDDevice)
       {
-        dsyslog("Füge Eintrag für das DVD-Device hinzu");
         Add(new cMainMenuItem(iCat, ImageList, dir));
         Add(new cMainMenuItem(iDevice, ImageList));
         if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
@@ -201,7 +193,6 @@ void cMainMenu::BuildDisp1(const char *dir)
         Add(new cMainMenuItem(iCat, ImageList, dir));
         if(DVDSwitchSetup.DisplayDVDDevice)
         {
-          dsyslog("Füge Eintrag für das DVD-Device hinzu");
           Add(new cMainMenuItem(iDevice, ImageList));
           if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
             FirstSelectable = 1;
@@ -257,7 +248,6 @@ void cMainMenu::BuildDisp1(const char *dir)
     case 2: // FileType
       if(DVDSwitchSetup.DisplayDVDDevice)
       {
-        dsyslog("Füge Eintrag für das DVD-Device hinzu");
         Add(new cMainMenuItem(iCat, ImageList, dir));
         Add(new cMainMenuItem(iDevice, ImageList));
         if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
@@ -312,7 +302,6 @@ void cMainMenu::BuildDisp1(const char *dir)
       break;
   }
 
-  dsyslog("Ermittle FirstSelectable");
   mItem = (cMainMenuItem*)First();
   if(mItem && FirstSelectable < 0)
   {
@@ -338,7 +327,6 @@ void cMainMenu::BuildDisp2(const char *dir)
 
   if(DVDSwitchSetup.DisplayDVDDevice && !strcasecmp(dir, MainMenuOptions.ImageDir()))
   {
-    dsyslog("Füge Eintrag für das DVD-Device hinzu");
     Add(new cMainMenuItem(iDevice, ImageList));
     if(!MainMenuOptions.getLastSelectItemName() && MainMenuOptions.LastSelectItemType() == iDevice)
     {
@@ -530,28 +518,31 @@ eOSState cMainMenu::ProcessKey(eKeys Key)
             DVDSwitchSetup.HideTypeCol = CMDImg->tmpHideTypeCol;
             if(!isempty(CMDImg->NewFile))
             {
+              int iRet = 0;
               char *buffer = NULL;
               char *buffer2 = NULL;
               cFileInfo *info = new cFileInfo(CMDImg->Rename());
               if(ImageList.IsHide(info->Extension()))
               {
                 buffer2 = strdup(info->Extension());
-                asprintf(&buffer, "%s/%s%s", info->Path(), stripspace(CMDImg->NewFile), buffer2);
+                iRet = asprintf(&buffer, "%s/%s%s", info->Path(), stripspace(CMDImg->NewFile), buffer2);
               }
               else
-                asprintf(&buffer, "%s/%s", info->Path(), stripspace(CMDImg->NewFile));
+                iRet = asprintf(&buffer, "%s/%s", info->Path(), stripspace(CMDImg->NewFile));
               DELETENULL(info);
-              info = new cFileInfo(buffer);
-              if(!info->isExists())
-              {
-                if(cFileCMD::Rn(CMDImg->Rename(), buffer))
-                  MainMenuOptions.setLastSelectItemName(buffer);
+              if(iRet > 0) {
+                info = new cFileInfo(buffer);
+                if(!info->isExists())
+                {
+                  if(cFileCMD::Rn(CMDImg->Rename(), buffer))
+                    MainMenuOptions.setLastSelectItemName(buffer);
+                }
+                else
+                  OsdMsg(mtWarning,tr("File exists in Directory"));
+                FREENULL(buffer);
+                DELETENULL(info);
               }
-              else
-                OsdMsg(mtWarning,tr("File exists in Directory"));
-              FREENULL(buffer);
               FREENULL(buffer2);
-              DELETENULL(info);
             }
             DELETENULL(CMDImg);
             Build(MainMenuOptions.CurrentDir());
@@ -927,7 +918,8 @@ char *cMainMenu::CreateOSDName(eMainMenuItem itype, cImageList &ImageList, const
   switch(itype)
   {
     case iCat:
-      asprintf(&reg, "^%s", MainMenuOptions.ImageDir());
+      if(0 >= asprintf(&reg, "^%s", MainMenuOptions.ImageDir()))
+        break;
       if(!RegIMatch(file, reg))
         buffer = file;
       else
@@ -985,9 +977,10 @@ char *cMainMenu::CreateOSDName(eMainMenuItem itype, cImageList &ImageList, const
       if(DVDSwitchSetup.HideImgSizeCol)
       {
         char *size = NULL;
-        asprintf(&size, "(%03.1f)\t", info->SizeGByte(1));
-        tmpOSD += size;
-        free(size);
+        if(0 < asprintf(&size, "(%03.1f)\t", info->SizeGByte(1))) {
+          tmpOSD += size;
+          free(size);
+        }
       }
       tmpOSD += &buffer;
       

@@ -6,7 +6,6 @@ cMenuSetupDSITypes::cMenuSetupDSITypes(cImageList &imagelist, bool select, int* 
   : cOsdMenu(tr("Imagetypes"))
   , ImageList(imagelist)
 {
-  dsyslog("Ermitlle ersten Setup-Eintrag");
   cSetupLine *item = Setup.First();
   Select = select;
   RetIndex = retindex;
@@ -113,17 +112,13 @@ eOSState cMenuSetupDSITypes::ProcessKey(eKeys Key)
         {
           if(SetupLine)
           {
-            dsyslog("Lösche SetupLine");
             Setup.Del(SetupLine);
           }
-          dsyslog("Hole SetupString");
           if(ImageList.GetSetupString())
             SetupLine = new cSetupLine("ImageTypes", ImageList.GetSetupString(), "dvdswitch");
           else
             SetupLine = new cSetupLine("ImageTypes", "", "dvdswitch");
-          dsyslog("neue SetupLine erstellt");
           Setup.Add(SetupLine);
-          dsyslog("neue SetupLine hinzugefügt");
           return osBack;
         }
         break;

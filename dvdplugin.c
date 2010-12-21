@@ -8,13 +8,13 @@
 cDVDPluginThread::cDVDPluginThread(char *image)
   :cThread("DVDPluginThread")
 {
-  dsyslog("Create new DVD Thread");
+  dsyslog("dvdswitch: Create new DVD Thread");
   Image = image ? strdup(image) : NULL;
 }
 
 cDVDPluginThread::~cDVDPluginThread(void)
 {
-  dsyslog("DVD Thread stopped");
+  dsyslog("dvdswitch: DVD Thread stopped");
 
   free(Image);
   Cancel();
@@ -22,7 +22,7 @@ cDVDPluginThread::~cDVDPluginThread(void)
 
 void cDVDPluginThread::Action(void)
 {
-  dsyslog("DVD Thread started");
+  dsyslog("dvdswitch: DVD Thread started");
   if(Image)
     cDVDPlugin::ChangeLink(Image);
 
@@ -32,11 +32,11 @@ void cDVDPluginThread::Action(void)
   if(plugin)
   {
     plugin->MainMenuAction();
-    dsyslog("DVD MainMenuAction called");
+    dsyslog("dvdswitch: DVD MainMenuAction called");
   }
 #else
   cRemote::CallPlugin("dvd");
-  dsyslog("DVD Plugin called");
+  dsyslog("dvdswitch: DVD Plugin called");
 #endif
 
   cCondWait::SleepMs(2 * 1000);
@@ -47,12 +47,12 @@ void cDVDPluginThread::Action(void)
     cCondWait::SleepMs(5 * 1000);
     control = cControl::Control();
   }
-  dsyslog("DVD control closed");
+  dsyslog("dvdswitch: DVD control closed");
 
   if(Image)
     cDVDPlugin::ChangeLink(DVDSwitchSetup.DVDLinkOrg);
 
-  dsyslog("DVD Thread closed");
+  dsyslog("dvdswitch: DVD Thread closed");
   cDVDPlugin::Exit();
 }
 
@@ -62,13 +62,13 @@ cDVDPluginThread *cDVDPlugin::thread = NULL;
 
 void cDVDPlugin::DetectDevice(void)
 {
-  dsyslog("Scan nach DVD Device");
+  dsyslog("dvdswitch: Scan for DVD Device");
   char *cmd = NULL;
   char *output = NULL;
   char *dvd = NULL;
 
   if(0 < asprintf(&cmd, "ps -p %i -o cmd --no-header", getpid())) {
-    dsyslog("Commando: %s", cmd);
+    dsyslog("dvdswitch: Command: %s", cmd);
 
     FILE *p = popen(cmd, "r");
     if(p)
@@ -108,13 +108,13 @@ void cDVDPlugin::DetectDevice(void)
     
     if(dvd)
     {
-      isyslog("Used DVD Device: %s", dvd);
+      isyslog("dvdswitch: Used DVD Device: %s", dvd);
       DVDSwitchSetup.SetDVDDevice(dvd);
       free(dvd);
     }
     else
     {
-      isyslog("Use Default-DVD Device /dev/dvd");
+      isyslog("dvdswitch: Use Default-DVD Device /dev/dvd");
       DVDSwitchSetup.SetDVDDevice("/dev/dvd");
     }
     
@@ -167,9 +167,9 @@ void cDVDPlugin::ChangeLink(char *target)
     int rc = 0;
 
     if(0 < asprintf(&cmd, LINK, target, DVDSwitchSetup.DVDLink)) {
-      dsyslog("Change link: %s", cmd);
+      dsyslog("dvdswitch: Change link: %s", cmd);
       rc = system(cmd);
-      dsyslog("Change link got: %i", rc);
+      dsyslog("dvdswitch: Change link got: %i", rc);
       free(cmd);
     }
   }
