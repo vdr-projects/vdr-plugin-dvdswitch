@@ -1,0 +1,75 @@
+#include <vdr/tools.h>
+#include "dvdlist.h"
+#include "setup.h"
+#include "helpers.h"
+#include "imagelist.h"
+
+// --- cDVDList ------------------------------------------------------------------
+
+bool cDVDList::Create(char *dir, char *exts, char *dirs, eFileList smode, bool sub)
+{
+  DEBUG("DVDList: %s, %s", exts, dirs);
+
+  Clear();
+  FREENULL(DVDExts);
+  FREENULL(DVDDirs);
+
+  DVDExts = exts ? strdup(exts) : NULL;
+  DVDDirs = dirs ? strdup(dirs) : NULL;
+
+  if(!DVDExts && !DVDDirs)
+    return false;
+
+  return Load(dir, smode, sub);
+}
+
+bool cDVDList::Load(char *dir, eFileList smode, bool sub)
+{
+  DEBUG("DVDList: Load");
+  bool ret = false;
+  int i = 0;
+
+  cFileInfo *fInfo = NULL;
+  cFileList *fList = new cFileList();
+
+  fList->OptExclude("^lost\\+found$"); // lost+found Dir
+  fList->OptExclude("^\\."); // hidden Files
+  fList->OptExclude("\\.sdel$"); // del Files
+  fList->OptExclude("\\.smove$"); // move Files
+
+  if(DVDExts)
+  {
+    cTokenizer *token = new cTokenizer(DVDExts, "@");
+    char *extexp = NULL;
+    for(i = 1; i <= token->Count(); i++)
+    {
+      asprintf(&extexp, "%s$", token->GetToken(i));
+      fList->OptInclude(extexp, tFile);
+      FREENULL(extexp);
+    }
+    delete(token);
+  }
+
+  if(DVDDirs)
+    fList->OptInclude(".*", tDir);
+
+  fList->OptSort(smode, true);
+
+  ret = fList->Load(dir, sub);
+
+  cFileListItem *fItem = fList->First();
+  while(fItem)
+  {
+    fInfo = new cFileInfo(fItem->Value());
+    if(fInfo->Type() == tFile ||
+       fInfo->Type() == tDir && fList->DirIsIn(fItem, DVDDirs))
+      Add(new cDVDListItem(fItem->Value()));
+    DELETENULL(fInfo);
+    fItem = fList->Next(fItem);
+  }
+
+  delete(fList);
+  delete(fInfo);
+
+  return ret;
+}
