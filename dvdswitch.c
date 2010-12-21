@@ -17,7 +17,7 @@
 #include "imagelist.h"
 //#include "dvdlist.h"
 
-static const char *VERSION        = "0.1.0";
+static const char *VERSION        = "0.1.1";
 static const char *DESCRIPTION    = "allowed to play DVD-Images";
 //static const char *MAINMENUENTRY  = "DVDSwitch";
 

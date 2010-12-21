@@ -819,7 +819,7 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
               asprintf(&buffer, "%s/%s", DVDSwitchSetup.ImageDir, Dir);
           }
           if(buffer[strlen(buffer)-1] == '/')
-            buffer[strlen(buffer)-1] == '\0';
+            buffer[strlen(buffer)-1] = '\0';
           DEBUG("ReadThread wird gestartet");
           cCMDImageReadThread *read = new cCMDImageReadThread(File, buffer, ImgType);
           FREENULL(buffer);
