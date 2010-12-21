@@ -1,7 +1,17 @@
 VDR Plugin 'dvdswitch' Revision History
 ---------------------------------------
 
-2006-03-03: Version 0.1.0
+2006-05-01: Version 0.1.2
+- Anpassung an VDR Version 1.4.0
+- FIX: Kurzparameter "i" wird nun nicht mehr ignoriert (Danke zulu)
+- FIX: i18n.c (Danke hd.brummy)
+
+
+2006-03-04: Version 0.1.1
+- FIX: Fehlerhafte Stelle in command.c behoben (Danke pat und hanker)
+
+
+2006-03-03: Version 0.1.0 
 - FIX: Kompilierprobleme mit der 'dvdplugin.c' behoben (Danke an Frank99)
 - FIX: DVD-Plugin Thread-Objekt wird nun sauber beendet.
 - FIX: Beim Erstellen von Images wurde in bestimmten Situationen der

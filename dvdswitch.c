@@ -17,7 +17,7 @@
 #include "imagelist.h"
 //#include "dvdlist.h"
 
-static const char *VERSION        = "0.1.1";
+static const char *VERSION        = "0.1.2";
 static const char *DESCRIPTION    = "allowed to play DVD-Images";
 //static const char *MAINMENUENTRY  = "DVDSwitch";
 
@@ -86,7 +86,7 @@ bool cPluginDvdswitch::ProcessArgs(int argc, char *argv[])
   int c = 0;
   optind = 1; //default for getopt
 
-  while((c = getopt_long(argc, argv, "D:r:w:", long_options, NULL)) != -1)
+  while((c = getopt_long(argc, argv, "D:r:w:i:", long_options, NULL)) != -1)
   {
     switch(c)
     {

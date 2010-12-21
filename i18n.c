@@ -34,8 +34,32 @@ const tI18nPhrase Phrases[] = {
     "",// cze,ces
 #endif
   },
-  { "allows to DVD-Images",// eng,dos
+  { "allowed to play DVD-Images",// eng,dos
     "ermöglicht DVD-Images abzuspielen",//deu,ger
+    "",// slv,slo
+    "",// ita
+    "",// dut,nla,nld
+    "",// por
+    "",// fra,fre
+    "",// nor
+    "",// fin,smi
+    "",// pol
+    "",// esl,spa
+    "",// ell,gre
+    "",// sve,swe
+    "",// rom,rum
+    "",// hun
+    "",// cat,cln
+    "",// rus
+    "",// hrv
+    "",// est
+    "",// dan
+#if VDRVERSNUM >= 10342
+    "",// cze,ces
+#endif
+  },
+  { " abcdefghijklmnopqrstuvwxyz0123456789-.#~",// eng,dos
+    " abcdefghijklmnopqrstuvwxyz0123456789-.#~",//deu,ger
     "",// slv,slo
     "",// ita
     "",// dut,nla,nld
