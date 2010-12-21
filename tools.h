@@ -15,110 +15,28 @@ class cFileDelThread : public cThread
     char *File;
     bool Ok;
 
-    bool RightCheck(const char *value)
-    {
-      bool ret = false;
-      if(value)
-      {
-        cFileInfo *info = new cFileInfo(value);
-        ret = info->isWriteable();
-        DELETENULL(info);
-      }
-      return ret;
-    }
+    bool RightCheck(const char *value);
   protected:
-    virtual void Action(void)
-    {
-      if(File)
-        cFileCMD::Del(File);
-      delete(this);
-    };
+    virtual void Action(void);
   public:
-    cFileDelThread(const char *file)
-    {
-      File = NULL;
-      Ok = false;
-      
-      if(!RightCheck(file))
-        OsdMsg(mtError,tr("no Rights to delete"));
-      else
-      {
-        Ok = true;
-        if(file)
-        {
-          if(0 < asprintf(&File, "%s.sdel", file)) {
-            cFileCMD::Rn(file, File);
-          }
-        }
-      }
-    }
-    ~cFileDelThread(void) { free(File); }
+    cFileDelThread(const char *file);
+    ~cFileDelThread(void);
     bool OK(void) { return Ok; };
 };
 
 class cFileMoveThread : public cThread
 {
-  private:
     char *FileName;
     char *File;
     char *Dest;
     bool Ok;
 
-    bool RightCheck(const char *value)
-    {
-      bool ret = false;
-      if(value)
-      {
-        cFileInfo *info = new cFileInfo(value);
-        ret = info->isWriteable();
-        DELETENULL(info);
-      }
-      return ret;
-    }
+    bool RightCheck(const char *value);
   protected:
-    virtual void Action(void)
-    {
-      if(FileName && File && Dest)
-      {
-        char *buffer = NULL;
-        if(0 < asprintf(&buffer, "%s/%s", Dest, FileName)) {
-          cFileCMD::Rn(File, buffer);
-          free(buffer);
-        }
-      }
-      delete(this);
-    };
+    virtual void Action(void);
   public:
-    cFileMoveThread(const char *file, char *dest)
-    {
-      FileName = NULL;
-      File = NULL;
-      Dest = NULL;
-      Ok = false;
-
-      if(!RightCheck(file) || !RightCheck(dest))
-        OsdMsg(mtError,tr("no Rights to move"));
-      else
-      {
-        Ok = true;
-        if(file)
-        {
-          cFileInfo *info = new cFileInfo(file);
-          FileName = strdup(info->FileName());
-          DELETENULL(info);
-          if(0 < asprintf(&File, "%s.smove", file)) {
-            cFileCMD::Rn(file, File);
-          }
-        }
-        Dest = dest ? strdup(dest) : NULL;
-      }
-    }
-    ~cFileMoveThread(void)
-    {
-      free(FileName);
-      free(File);
-      free(Dest);
-    }
+    cFileMoveThread(const char *file, char *dest);
+    ~cFileMoveThread(void);
     bool OK(void) { return Ok; };
 };
 
