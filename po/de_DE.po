@@ -3,7 +3,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: vdr-dvdswitch-plugin 0.1.4\n"
+"Project-Id-Version: vdr-dvdswitch-plugin 0.1.6\n"
 "Report-Msgid-Bugs-To: <see README>\n"
 "POT-Creation-Date: 2010-12-21 21:35+0100\n"
 "PO-Revision-Date: 2009-10-03 14:03+0200\n"
@@ -357,7 +357,7 @@ msgid "Imagetypes"
 msgstr "Imagetypen"
 
 msgid "Edit"
-msgstr ""
+msgstr "Bearbeiten"
 
 msgid "really delete Entry?"
 msgstr "Eintrag wirklich löschen?"
@@ -396,10 +396,10 @@ msgid "'File Extension' must not empty!"
 msgstr "'Datei Erweiterung' darf nicht leer sein!"
 
 msgid "No rights to delete image"
-msgstr ""
+msgstr "Keine Berechtigung zum Löschen des Images"
 
 msgid "Operation failed"
-msgstr ""
+msgstr "Operation fehlgeschlagen"
 
 msgid "No rights to move image"
-msgstr ""
+msgstr "Keine Berechtigung zum Verschieben des Images"
