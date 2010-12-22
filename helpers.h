@@ -60,24 +60,6 @@ class cStringValue
     int len(void) const { return String ? strlen(String) : 0; }
 };
 
-// --- cStringList --------------------------------------
-
-class cStringListItem : public cListObject
-{
-  private:
-    char *String;
-  public:
-    cStringListItem(const char *string)
-    {
-      String = string ? strdup(string) : NULL;
-    }
-    ~cStringListItem(void) { free(String); }
-
-    char *Value(void) { return String; }
-};
-
-//class cStringList : public cList<cStringListItem> {};
-
 // --- cTokenizer ---------------------------------------
 
 class cToken : public cListObject
