@@ -1,7 +1,7 @@
 VDR Plugin 'dvdswitch' Revision History
 ---------------------------------------
 
-2010-12-21:
+2010-12-22: Version 0.1.6
 - Add french translation from http://www.vdr-portal.de/board/thread.php?postid=488211#post488211
 - Fix some GCC warnings (asprintf, realpath)
 - Use Make.global - Make sure that necessary options are included
@@ -13,8 +13,7 @@ VDR Plugin 'dvdswitch' Revision History
 - Update to vdr 1.6.0
 
 2006-06-26: Version 0.1.3
-- FIX: Verstecken des Hauptmenüeintrages funktioniert nun (Dank an kilroy
-und wilderigel)
+- FIX: Verstecken des Hauptmenüeintrages funktioniert nun (Dank an kilroy und wilderigel)
 
 2006-05-01: Version 0.1.2
 - Anpassung an VDR Version 1.4.0
