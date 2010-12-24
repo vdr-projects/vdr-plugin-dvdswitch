@@ -1,4 +1,4 @@
-#include <vdr/remote.h>
+
 #include <vdr/plugin.h>
 #include <vdr/player.h>
 #include <unistd.h>
@@ -62,63 +62,68 @@ cDVDPluginThread *cDVDPlugin::thread = NULL;
 
 void cDVDPlugin::DetectDevice(void)
 {
-  dsyslog("dvdswitch: Scan for DVD Device");
-  char *cmd = NULL;
-  char *output = NULL;
+  dsyslog("dvdswitch: parse cmdline of dvd-plugin for DVD Device");
+  char *file = NULL;
   char *dvd = NULL;
 
-  if(0 < asprintf(&cmd, "ps -p %i -o cmd --no-header", getpid())) {
-    dsyslog("dvdswitch: Command: %s", cmd);
+  if(0 < asprintf(&file, "/proc/%i/cmdline", getpid())) {
+    /* read /proc/`pidof vdr`/cmdline */
+    char buffer[1024];
+    int len = -1;
 
-    FILE *p = popen(cmd, "r");
-    if(p)
-    {
-  #if VDRVERSNUM >= 10318
-      cReadLine rl;
-      output = rl.Read(p);
-  #else
-      output = readline(p);
-  #endif
-      pclose(p);
+    int fd = open(file,O_RDONLY);
+    if (fd >= 0) {
+      do {
+          len = read(fd,buffer,sizeof(buffer)); }
+      while (len == -1 && errno == EINTR);
+      close(fd);
+    } else {
+      char* szErr = get_strerror(errno);
+      esyslog("dvdswitch: could not open %s:%s", file, szErr ? szErr : "");
+      if(szErr) free(szErr);
     }
+    free(file);
 
-    cTokenizer *token = new cTokenizer(output, " ");
-    for(int i = 1; i <= token->Count(); i++)
-    {
-      if(RegIMatch(token->GetToken(i), "^--plugin=dvd") ||
-         (RegIMatch(token->GetToken(i - 1), "^-P$") &&
-          RegIMatch(token->GetToken(i), "^dvd$")))
-      {
-        if(RegIMatch(token->GetToken(i + 1), "^-C$") &&
-           token->GetToken(i + 2))
-        {
-          dvd = strdup(token->GetToken(i + 2));
-          break;
-        }
-        if(RegIMatch(token->GetToken(i + 1), "^--dvd="))
-        {
-          const char *p = strchr(token->GetToken(i + 1), '=');
-          p++;
-          dvd = strdup(p);
-          break;
+    if (len < 0) {
+      char* szErr = get_strerror(errno);
+      esyslog("dvdswitch: could not read %s:%s", file, szErr ? szErr : "");
+      if(szErr) free(szErr);
+    } else {
+      char *output = NULL;
+      for(int n = 0; n < len && !dvd;n += (strlen(output) + 1)) {
+        output = buffer + n;
+        //dsyslog("dvdswitch: parse '%s'", output);
+        if(0 == strncmp(output, "--plugin=dvd ",13)
+            || 0 == strncmp(output, "-Pdvd ",6)
+            || 0 == strncmp(output, "-P dvd ",7)
+            || 0 == strncmp(output, "-P'dvd ",7)
+            || 0 == strncmp(output, "-P\"dvd ",7)) {
+
+        cTokenizer *token = new cTokenizer(output, " ");
+        for(int i = 0; i <= token->Count(); i++) {
+            if(RegIMatch(token->GetToken(i), "^-C$") &&
+               token->GetToken(i + 1)) {
+              dvd = strdup(token->GetToken(i + 1));
+              break;
+            }
+            if(RegIMatch(token->GetToken(i), "^--dvd=")) {
+              const char *p = strchr(token->GetToken(i), '=');
+              dvd = strdup(p + 1);
+              break;
+            }
+          }
+          DELETENULL(token);
         }
       }
     }
-    DELETENULL(token);
-    
-    if(dvd)
-    {
-      isyslog("dvdswitch: Used DVD Device: %s", dvd);
+    if(!dvd) {
+      dvd = strdup("/dev/dvd");
+    }
+    if(dvd) {
+      isyslog("dvdswitch: use DVD Device: %s", dvd);
       DVDSwitchSetup.SetDVDDevice(dvd);
       free(dvd);
     }
-    else
-    {
-      isyslog("dvdswitch: Use Default-DVD Device /dev/dvd");
-      DVDSwitchSetup.SetDVDDevice("/dev/dvd");
-    }
-    
-    free(cmd);
   }
 }
 
@@ -163,14 +168,17 @@ void cDVDPlugin::ChangeLink(char *target)
 {
   if(target)
   {
-    char *cmd = NULL;
-    int rc = 0;
-
-    if(0 < asprintf(&cmd, LINK, target, DVDSwitchSetup.DVDLink)) {
-      dsyslog("dvdswitch: Change link: %s", cmd);
-      rc = system(cmd);
-      dsyslog("dvdswitch: Change link got: %i", rc);
-      free(cmd);
+    isyslog("dvdswitch: create link %s to %s", DVDSwitchSetup.DVDLink, target);
+    
+    if(-1 == unlink(DVDSwitchSetup.DVDLink) && errno != ENOENT) {
+      char* szErr = get_strerror(errno);
+      esyslog("dvdswitch: could not remove symbolic link %s : %s (%d)", DVDSwitchSetup.DVDLink, szErr ? szErr : "", errno);
+      if(szErr) free(szErr);
+    }
+    if(-1 == symlink(target, DVDSwitchSetup.DVDLink)) {
+      char* szErr = get_strerror(errno);
+      esyslog("dvdswitch: could not create link %s to %s :%s (%d)", DVDSwitchSetup.DVDLink, target, szErr ? szErr : "", errno);
+      if(szErr) free(szErr);
     }
   }
 }

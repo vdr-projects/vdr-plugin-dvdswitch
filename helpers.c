@@ -23,27 +23,23 @@ void OsdMsg(eMessageType Type, const char *Msg)
 #endif
 }
 
+char *get_strerror(int n) 
+{ 
+    char *s; 
+    size_t size = 128; 
+    s = (char*)malloc(size); 
+    if (s == NULL) 
+        return NULL;
+    strerror_r(n, s, size);
+    return s; 
+} 
+
 void OSDErrorNumMsg(int err, const char* szDef) 
 {	
-    char szErr[128];
-    int nErr = err;
-    szErr[sizeof(szErr)-1] = '\0';
-    if(0 != strerror_r(nErr,szErr,sizeof(szErr)-1)) {
-        szErr[0] = '\0';
-    } 
-    esyslog(szErr[0] != '\0'?szErr:szDef);
-    OsdMsg(mtError, szErr[0] != '\0'?szErr:szDef);
-}
-
-void SysLogErrorNumMsg(int err, const char* szDef) 
-{	
-    char szErr[128];
-    int nErr = err;
-    szErr[sizeof(szErr)-1] = '\0';
-    if(0 != strerror_r(nErr,szErr,sizeof(szErr)-1)) {
-        szErr[0] = '\0';
-    } 
-    esyslog(szErr[0] != '\0'?szErr:szDef);
+    char* szErr = get_strerror(err);
+    esyslog("dvdswitch: %s :%s", szDef, szErr ? szErr : "");
+    OsdMsg(mtError, szErr ? szErr : szDef);
+    if(szErr) free(szErr);
 }
 
 void ChangeChars(char *name, char *chars)

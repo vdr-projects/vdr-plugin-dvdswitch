@@ -5,8 +5,6 @@
 #include "helpers.h"
 #include "setup.h"
 
-#define LINK "ln -nfs '%s' '%s' 2> /dev/null"
-
 class cDVDPluginThread : public cThread
 {
   private:

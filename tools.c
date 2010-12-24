@@ -72,8 +72,11 @@ void cFileDelThread::Action(void)
   if(File) {
     dsyslog("dvdswitch: Execute remove %s",File);
     errno = 0;
-    if(!cFileCMD::Del(File))
-      SysLogErrorNumMsg(errno,"Operation file remove failed");
+    if(!cFileCMD::Del(File)) {
+      char* err = get_strerror(errno);
+      esyslog("dvdswitch: could not remove failed %s :%s", File, err ? err : "");
+      if(err) free(err);
+    }
   }
   delete(this);
 };
@@ -134,8 +137,11 @@ void cFileMoveThread::Action(void)
     if(0 < asprintf(&buffer, "%s/%s", Dest, FileName)) {
       dsyslog("dvdswitch: Execute move %s to %s",File, buffer);
       errno = 0;
-      if(!cFileCMD::Rn(File, buffer))
-        SysLogErrorNumMsg(errno,"Operation file remove failed");
+      if(!cFileCMD::Rn(File, buffer)) {
+        char* err = get_strerror(errno);
+        esyslog("dvdswitch: could not move file failed %s to %s :%s", File, buffer, err ? err : "");
+        if(err) free(err);
+      }
       free(buffer);
     }
   }

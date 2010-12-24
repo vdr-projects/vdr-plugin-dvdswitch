@@ -19,9 +19,7 @@
 #error "VDR-1.6.0 API version or greater is required!"
 #endif
 
-static const char *VERSION        = "0.1.6";
-static const char *DESCRIPTION    = tr("Allowed to play DVD-Images");
-//static const char *MAINMENUENTRY  = tr("DVDSwitch");
+static const char *VERSION        = "0.1.7";
 
 class cPluginDvdswitch : public cPlugin {
 private:
@@ -33,7 +31,7 @@ public:
   cPluginDvdswitch(void);
   virtual ~cPluginDvdswitch();
   virtual const char *Version(void) { return VERSION; }
-  virtual const char *Description(void) { return tr(DESCRIPTION); }
+  virtual const char *Description(void) { return tr("Allows playback of DVD images"); }
   virtual const char *CommandLineHelp(void);
   virtual bool ProcessArgs(int argc, char *argv[]);
   virtual bool Initialize(void);
