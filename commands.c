@@ -729,8 +729,10 @@ cCMDImageRead::cCMDImageRead(cImageList &imagelist)
   }
   else
   {
+    dsyslog("dvdswitch: query name of volume %s",DVDSwitchSetup.DVDLinkOrg);
     int err = volname(DVDSwitchSetup.DVDLinkOrg, File,sizeof(File));
     if(0 != err) {
+      esyslog("dvdswitch: Can't query name of volume! %d", err);
       OSDErrorNumMsg(err, tr("Can't query name of volume!"));
       strcpy(File, "\0");
     }
@@ -898,7 +900,7 @@ void cCMDImageReadThread::Action(void)
       if(f) {
 	      struct mntent *m;
 	      while ((m = getmntent(f))) {
-		      dsyslog("%s %s %s", m->mnt_fsname, m->mnt_dir, m->mnt_type);
+		      //dsyslog("%s %s %s", m->mnt_fsname, m->mnt_dir, m->mnt_type);
           if(   m && m->mnt_fsname && m->mnt_dir &&
                 (0 == strcmp(m->mnt_fsname, DVDSwitchSetup.DVDLinkOrg)
               || 0 == strcmp(m->mnt_fsname, buffer))) {

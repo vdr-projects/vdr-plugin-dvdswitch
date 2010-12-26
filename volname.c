@@ -18,12 +18,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <vdr/tools.h>
 
 int volname(const char* device, char* volname, size_t volsize)
 {
   int fd;
   int status;
   char buffer[PATH_MAX];
+
+  bzero(volname,volsize); 
 
   if(!realpath(device, buffer)) {
     return errno;
@@ -49,5 +52,8 @@ int volname(const char* device, char* volname, size_t volsize)
   }
 
   close(fd);
+
+  stripspace(volname);
+
   return 0;
 }
