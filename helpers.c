@@ -23,21 +23,15 @@ void OsdMsg(eMessageType Type, const char *Msg)
 #endif
 }
 
-char *get_strerror(int n) 
-{ 
-    char *s; 
-    size_t size = 128; 
-    s = (char*)malloc(size); 
-    if (s == NULL) 
-        return NULL;
-    strerror_r(n, s, size);
-    return s; 
+char *get_strerror(int nErr) { 
+    char szErr[128];
+    return nErr ? strdup(strerror_r(nErr,szErr,sizeof(szErr)-1)) : NULL;
 } 
 
 void OSDErrorNumMsg(int err, const char* szDef) 
 {	
     char* szErr = get_strerror(err);
-    esyslog("dvdswitch: %s :%s", szDef, szErr ? szErr : "");
+    esyslog("dvdswitch: %s : %s (%d)", szDef, szErr ? szErr : "", err);
     OsdMsg(mtError, szErr ? szErr : szDef);
     if(szErr) free(szErr);
 }
