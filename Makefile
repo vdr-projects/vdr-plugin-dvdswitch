@@ -49,8 +49,9 @@ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o helpers.o tools.o imagelist-item.o imagelist.o dvdlist-item.o \
-        dvdlist.o dvdplugin.o menu-item.o menu.o setup.o setup-itypes.o commands.o
+OBJS = $(PLUGIN).o helpers.o tools.o imagelist-item.o imagelist.o \
+        dvdlist-item.o dvdlist.o dvdplugin.o menu-item.o menu.o setup.o \
+        setup-itypes.o commands.o volname.o
 
 ### Implicit rules:
 

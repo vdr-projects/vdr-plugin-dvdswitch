@@ -7,7 +7,7 @@
 #include "menu-item.h"
 #include "dvdplugin.h"
 #include "setup-itypes.h"
-
+#include "volname.h"
 // --- cCMD ----------------------------------------------------------
 
 eOSState cCMD::Play(cMainMenuItem *item)
@@ -686,7 +686,7 @@ eOSState cCMDImage::Burn(const char *file)
   {
     esyslog("dvdswitch: Can't execute script to write dvd");
     DELETENULL(info);
-    OsdMsg(mtError,tr("Cannot execute Writescript!"));
+    OsdMsg(mtError,tr("Can't execute Writescript!"));
     return osContinue;
   }
   
@@ -712,33 +712,34 @@ cCMDImageRead::cCMDImageRead(cImageList &imagelist)
 {
   dsyslog("dvdswitch: Read DVD Image");
 
-  cFileInfo *info = new cFileInfo(DVDSwitchSetup.DVDReadScript);
+  cFileInfo info(DVDSwitchSetup.DVDReadScript);
 
-  if(!info->isExists())
+  if(!info.isExists())
   {
     esyslog("dvdswitch: Missing script to read dvd");
-    DELETENULL(info);
     OsdMsg(mtError,tr("Specified Readscript not exist!"));
     cRemote::Put(kBack);
   }
-  else if(!info->isExecutable())
+  else if(!info.isExecutable())
   {
     esyslog("dvdswitch: Can't execute script to write dvd");
-    DELETENULL(info);
-    OsdMsg(mtError,tr("Cannot execute Readscript!"));
+    OsdMsg(mtError,tr("Can't execute Readscript!"));
     cRemote::Put(kBack);
   }
   else
   {
-    DELETENULL(info);
-    strcpy(File, "\0");
+    int err = volname(DVDSwitchSetup.DVDLinkOrg, File,sizeof(File));
+    if(0 != err) {
+      OSDErrorNumMsg(err, tr("Can't query name of volume!"));
+      strcpy(File, "\0");
+    }
     strcpy(Dir, "\0");
     strcpy(ImgTypeTxt, "\0");
     ImgType = -1;
 
-    Add(new cMenuEditStrItem(tr("Name:"), File, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")));
-    Add(new cMenuEditStrItem(tr("Directory:"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")));
-    Add(new cMenuEditStrItem(tr("Imagetype:"), ImgTypeTxt, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")));
+    Add(new cMenuEditStrItem(tr("Name"), File, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")));
+    Add(new cMenuEditStrItem(tr("Directory"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")));
+    Add(new cMenuEditStrItem(tr("Imagetype"), ImgTypeTxt, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")));
 
     SetHelp();
     Display();

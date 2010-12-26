@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-dvdswitch-plugin 0.1.6\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2010-12-23 20:45+0100\n"
+"POT-Creation-Date: 2010-12-26 17:07+0100\n"
 "PO-Revision-Date: 2010-12-21 12:59+0100\n"
 "Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -73,15 +73,12 @@ msgstr "Editer le dossier"
 msgid "No rights to change inside this directory!"
 msgstr ""
 
-#, fuzzy
 msgid "Really delete?"
 msgstr "Vraiment effacer?"
 
-#, fuzzy
 msgid "Directory not empty! However delete?"
 msgstr "Le dossier n'est pas vide. L'effacer quand même?"
 
-#, fuzzy
 msgid "Missing rights to create directory!"
 msgstr "pas d'autorisation de création"
 
@@ -94,7 +91,6 @@ msgstr " aàbcçdeéèfghijklmnopqrstuvwxyz0123456789-.#~"
 msgid "Directory exists"
 msgstr "Le dossier existe déjà"
 
-#, fuzzy
 msgid "Missing rights to rename!"
 msgstr "pas d'autorisation d'écriture"
 
@@ -110,7 +106,7 @@ msgstr "Introduire"
 msgid "Specified Writescript not exist!"
 msgstr "Le Writescript indiqué n'existe pas!"
 
-msgid "Cannot execute Writescript!"
+msgid "Can't execute Writescript!"
 msgstr "Le Writescript ne peut pas être effectué!"
 
 msgid "Burn Now?"
@@ -122,17 +118,20 @@ msgstr "Lire le DVD"
 msgid "Specified Readscript not exist!"
 msgstr "Le Readscript indiqué n'existe pas!"
 
-msgid "Cannot execute Readscript!"
+msgid "Can't execute Readscript!"
 msgstr "Le Readscript ne peut pas être effectué!"
 
-msgid "Name:"
-msgstr "Nom:"
+msgid "Can't query name of volume!"
+msgstr ""
 
-msgid "Directory:"
-msgstr "Dossier:"
+msgid "Name"
+msgstr "Nom"
 
-msgid "Imagetype:"
-msgstr "Type d'image:"
+msgid "Directory"
+msgstr "Dossier"
+
+msgid "Imagetype"
+msgstr "Type d'image"
 
 msgid "read in"
 msgstr "Lire"
@@ -161,9 +160,6 @@ msgstr "Le DVD plugin n'est pas disponible! La fonction est déactivée!"
 msgid "Directory with 'VIDEO_TS' Folder"
 msgstr "Dossier avec dossier 'VIDEO_TS'"
 
-msgid "Directory"
-msgstr "Dossier"
-
 msgid "File with '.iso' Extension"
 msgstr "Fichier avec extension '.iso'"
 
@@ -182,7 +178,6 @@ msgstr "Changer"
 msgid "File exists in Directory"
 msgstr "Le fichier existe déjà dans le dossier"
 
-#, fuzzy
 msgid "without category"
 msgstr "sans catégorie"
 
@@ -405,16 +400,12 @@ msgstr "Le dossier 'contient' ne peut pas être vide!"
 msgid "'File Extension' must not empty!"
 msgstr "'Le suffix de ficher' ne doit pas être vide!"
 
-#, fuzzy
 msgid "No rights to delete image"
 msgstr "pas d'autorisation de création"
 
 msgid "Operation failed"
 msgstr ""
 
-#, fuzzy
 msgid "No rights to move image"
 msgstr "pas d'autorisation de création"
 
-#~ msgid "no Rights!"
-#~ msgstr "pas d'autorisation!"

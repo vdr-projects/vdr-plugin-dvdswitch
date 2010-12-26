@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-dvdswitch-plugin 0.1.6\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2010-12-23 20:45+0100\n"
+"POT-Creation-Date: 2010-12-26 17:07+0100\n"
 "PO-Revision-Date: 2009-10-03 14:03+0200\n"
 "Last-Translator:\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -101,7 +101,7 @@ msgstr "Einfügen"
 msgid "Specified Writescript not exist!"
 msgstr "Angegebenes Writescript existiert nicht!"
 
-msgid "Cannot execute Writescript!"
+msgid "Can't execute Writescript!"
 msgstr "Kann Writescript nicht ausführen!"
 
 msgid "Burn Now?"
@@ -113,17 +113,20 @@ msgstr "Lies DVD"
 msgid "Specified Readscript not exist!"
 msgstr "Angegebenes Readscript existiert nicht!"
 
-msgid "Cannot execute Readscript!"
+msgid "Can't execute Readscript!"
 msgstr "Kann Readscript nicht ausführen!"
 
-msgid "Name:"
-msgstr "Name:"
+msgid "Can't query name of volume!"
+msgstr "Konnte Name des Volume nicht abfragen"
 
-msgid "Directory:"
-msgstr "Verzeichnis:"
+msgid "Name"
+msgstr "Name"
 
-msgid "Imagetype:"
-msgstr "ImageTyp:"
+msgid "Directory"
+msgstr "Verzeichnis"
+
+msgid "Imagetype"
+msgstr "ImageTyp"
 
 msgid "read in"
 msgstr "Einlesen"
@@ -151,9 +154,6 @@ msgstr "DVD Plugin nicht gefunden! Funktion deaktiviert!"
 
 msgid "Directory with 'VIDEO_TS' Folder"
 msgstr "Verzeichnis mit 'VIDEO_TS' Ordner"
-
-msgid "Directory"
-msgstr "Verzeichnis"
 
 msgid "File with '.iso' Extension"
 msgstr "Datei mit '.iso' Extension"
@@ -403,3 +403,4 @@ msgstr "Operation fehlgeschlagen"
 
 msgid "No rights to move image"
 msgstr "Keine Berechtigung zum Verschieben des Images"
+
