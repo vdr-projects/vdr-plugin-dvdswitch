@@ -81,7 +81,7 @@ void cDVDSwitchSetup::Init(void)
   SModes[2] = tr("descending");
 
   MaxCommands = 11;
-  Commands[0] = tr("none Function");
+  Commands[0] = tr("None function");
   Commands[1] = tr("Dir. Management");
   Commands[2] = tr("Tray open");
   Commands[3] = tr("Tray close");
@@ -190,11 +190,11 @@ void cMenuSetupDVDSwitch::Set(void)
 
   Clear();
 
-  Add(new cMenuEditCatItem(tr("Generic Settings"), ViewGeneric));
+  Add(new cMenuEditCatItem(tr("Generic settings"), ViewGeneric));
   ViewGenericPos = Count() - 1;
   if(ViewGeneric)
   {
-    Add(new cMenuEditBoolItem(tr("\tHide Mainmenu Entry"), &data.HideMenuEntry));
+    Add(new cMenuEditBoolItem(tr("\tHide mainmenu entry"), &data.HideMenuEntry));
     if (!data.HideMenuEntry)
       Add(new cMenuEditStrItem(tr("\t  Name"),
           data.MenuName,
@@ -205,18 +205,18 @@ void cMenuSetupDVDSwitch::Set(void)
           data.ImageDir,
           MaxFileName,
           "abcdefghijklmnopqrstuvwxyz0123456789-.#~/"));
-    Add(new cOsdItem(tr("\tImagetypes")));
-    Add(new cMenuEditBoolItem(tr("\tView free DiskSpace"), &data.ViewFreeDiskSpace));
+    Add(new cOsdItem(tr("\tType of images")));
+    Add(new cMenuEditBoolItem(tr("\tView free disk space"), &data.ViewFreeDiskSpace));
     Add(new cOsdItem("------------------------------------------------------------------------------------------"));
     item = Last();
     item->SetSelectable(false);
   }
 
-  Add(new cMenuEditCatItem(tr("Display Settings"), ViewDisplay));
+  Add(new cMenuEditCatItem(tr("Display settings"), ViewDisplay));
   ViewDisplayPos = Count() - 1;
   if(ViewDisplay)
   {
-    Add(new cMenuEditStraItem(tr("\tDisplay Mode"), &data.DisplayMode, data.MaxDModes, data.DModes));
+    Add(new cMenuEditStraItem(tr("\tDisplay mode"), &data.DisplayMode, data.MaxDModes, data.DModes));
     if(data.DisplayMode == 1)
       Add(new cMenuEditStraItem(tr("\t  Category Type"), &data.CategorieType, data.MaxCTypes, data.CTypes));
     if(data.DisplayMode > 0)
@@ -228,7 +228,7 @@ void cMenuSetupDVDSwitch::Set(void)
     item->SetSelectable(false);
   }
 
-  Add(new cMenuEditCatItem(tr("Special Display Settings"), ViewSpecialDisplay));
+  Add(new cMenuEditCatItem(tr("Special display settings"), ViewSpecialDisplay));
   ViewSpecialDisplayPos = Count() - 1;
   if(ViewSpecialDisplay)
   {
@@ -378,13 +378,13 @@ eOSState cMenuSetupDVDSwitch::ProcessKey(eKeys Key)
         state = cMenuSetupPage::ProcessKey(Key);
         ItemText = Get(Current())->Text();
         
-        if(strstr(ItemText, tr("\tImagetypes")) == ItemText)
+        if(strstr(ItemText, tr("\tType of images")) == ItemText)
           cOsdMenu::SetHelp(NULL, NULL, NULL, tr("to adjust"));
         else
           cOsdMenu::SetHelp(NULL, NULL, NULL, NULL);
         break;
       case kBlue:
-        if(strstr(ItemText, tr("\tImagetypes")) == ItemText)
+        if(strstr(ItemText, tr("\tType of images")) == ItemText)
           return AddSubMenu(new cMenuSetupDSITypes(ImageList));
         break;
       default:

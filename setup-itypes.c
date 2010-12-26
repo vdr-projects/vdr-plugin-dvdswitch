@@ -3,7 +3,7 @@
 #include "setup.h"
 
 cMenuSetupDSITypes::cMenuSetupDSITypes(cImageList &imagelist, bool select, int* retindex, char *buffer)
-  : cOsdMenu(tr("Imagetypes"))
+  : cOsdMenu(tr("Type of images"))
   , ImageList(imagelist)
 {
   cSetupLine *item = Setup.First();
@@ -77,7 +77,7 @@ eOSState cMenuSetupDSITypes::ProcessKey(eKeys Key)
         state = AddSubMenu(new cMenuSetupDSITypesItem(ImageList, ImageList.Count()));
         break;
       case kYellow:
-        if(Interface->Confirm(tr("really delete Entry?")))
+        if(Interface->Confirm(tr("Really delete entry?")))
         {
           item = ImageList.Get(Current());
           ImageList.Del(item);
@@ -167,21 +167,21 @@ void cMenuSetupDSITypesItem::Set(void)
 
   Clear();
 
-  Add(new cMenuEditStrItem(tr("Description:"),
+  Add(new cMenuEditStrItem(tr("Description"),
       LongName,
       50,
       " abcdefghijklmnopqrstuvwxyz0123456789-.#~'/()[]"));
-  Add(new cMenuEditStrItem(tr("Type-Title:"),
+  Add(new cMenuEditStrItem(tr("Type title"),
       ShortName,
       20,
       " abcdefghijklmnopqrstuvwxyz0123456789-.#~'/()[]"));
-  Add(new cMenuEditStraItem(tr("Image Type"), &FileType, 2, FileTypes));
-  Add(new cMenuEditStrItem(!FileType ? tr("Directory contains:") : tr("File Extension:"),
+  Add(new cMenuEditStraItem(tr("Image type"), &FileType, 2, FileTypes));
+  Add(new cMenuEditStrItem(!FileType ? tr("Directory contains") : tr("File extension"),
       Extension,
       20,
       "abcdefghijklmnopqrstuvwxyz0123456789-_.#~"));
   if(FileType)
-    Add(new cMenuEditBoolItem(tr("Hide Extension"), &HideExtension));
+    Add(new cMenuEditBoolItem(tr("Hide extension"), &HideExtension));
 
   SetCurrent(Get(current));
   Display();
@@ -211,7 +211,7 @@ eOSState cMenuSetupDSITypesItem::ProcessKey(eKeys Key)
         }
         if(isempty(ShortName))
         {
-          OsdMsg(mtWarning,tr("'Type-Title' must not empty!"));
+          OsdMsg(mtWarning,tr("'Type title' must not empty!"));
           return osContinue;
         }
         if(isempty(Extension))
@@ -219,7 +219,7 @@ eOSState cMenuSetupDSITypesItem::ProcessKey(eKeys Key)
           if(!FileType)
             OsdMsg(mtWarning,tr("'Directory contains' must not empty!"));
           else
-            OsdMsg(mtWarning,tr("'File Extension' must not empty!"));
+            OsdMsg(mtWarning,tr("'File extension' must not empty!"));
           return osContinue;
         }
         if(!Item)

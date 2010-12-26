@@ -769,7 +769,7 @@ eOSState cMainMenu::SelectItem(void)
         if(!info->isExecutable() || !info->isReadable())
         {
           DELETENULL(info);
-          OsdMsg(mtError,tr("No rights to change inside this directory!"));
+          OsdMsg(mtError,tr("No rights to access this directory!"));
           return osContinue;
           break;
         }
@@ -1066,7 +1066,7 @@ void cMainMenu::SetState(eMainMenuState state)
           else
             strn0cpy(CMDImg->NewFile, info->FileName(), MaxFileName);
           DELETENULL(info);
-          Ins(new cMenuEditStrItem(tr("Rename:"), CMDImg->NewFile, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")),
+          Ins(new cMenuEditStrItem(tr("Rename"), CMDImg->NewFile, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")),
               true,
               mItem);
           dmItem = mItem;

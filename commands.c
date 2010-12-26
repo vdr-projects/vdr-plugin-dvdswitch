@@ -220,7 +220,7 @@ void cCMDDir::Build(char *dir)
   if(State == csNone)
   {
     SetCols(0);
-    SetTitle(tr("Edit Directories"));
+    SetTitle(tr("Edit directories"));
   }
 
   cDirHandling *DirHand = new cDirHandling(this, this);
@@ -262,7 +262,7 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
             {
               esyslog("dvdswitch: Can't access to directory!");
               DELETENULL(info);
-              OsdMsg(mtError,tr("No rights to change inside this directory!"));
+              OsdMsg(mtError,tr("No rights to access this directory!"));
               return osContinue;
               break;
             }
@@ -310,7 +310,7 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
                 if(!info->isExecutable() || !info->isReadable())
                 {
                   esyslog("dvdswitch: Can't access to directory!");
-                  OsdMsg(mtError,tr("No rights to change inside this directory!"));
+                  OsdMsg(mtError,tr("No rights to access this directory!"));
                 }
                 else
                 {
@@ -376,7 +376,7 @@ eOSState cCMDDir::New(void)
     SetDir();
 
     cMainMenuItem *mItem = (cMainMenuItem*)First();
-    Ins(new cMenuEditStrItem(tr("New:"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-.#~")),
+    Ins(new cMenuEditStrItem(tr("New"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-.#~")),
         true,
         mItem);
     while(mItem)
@@ -463,7 +463,7 @@ eOSState cCMDDir::Edit(cMainMenuItem *mItem)
     if(!strcasecmp(mItem->FileName(), LastSelDir()))
     {
       dsyslog("dvdswitch: Directory: Edit: Item found: %s", mItem->FileName());
-      Ins(new cMenuEditStrItem(tr("Rename:"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")),
+      Ins(new cMenuEditStrItem(tr("Rename"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")),
           true,
           mItem);
       dmItem = mItem;
@@ -695,7 +695,7 @@ eOSState cCMDImage::Burn(const char *file)
 
   info = new cFileInfo(file);
 
-  if(Interface->Confirm(tr("Burn Now?")))
+  if(Interface->Confirm(tr("Burn now?")))
   {
     dsyslog("dvdswitch: Start Burn-Thread");
     cCMDImageBurnThread *burn = new cCMDImageBurnThread(file, info->Type());
@@ -740,9 +740,10 @@ cCMDImageRead::cCMDImageRead(cImageList &imagelist)
     strcpy(ImgTypeTxt, "\0");
     ImgType = -1;
 
-    Add(new cMenuEditStrItem(tr("Name"), File, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")));
-    Add(new cMenuEditStrItem(tr("Directory"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")));
-    Add(new cMenuEditStrItem(tr("Imagetype"), ImgTypeTxt, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")));
+    const char* szAllowed = tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~");
+    Add(new cMenuEditStrItem(tr("Name"), File, MaxFileName, szAllowed));
+    Add(new cMenuEditStrItem(tr("Directory"), Dir, MaxFileName, szAllowed));
+    Add(new cMenuEditStrItem(tr("Type of image"), ImgTypeTxt, MaxFileName, szAllowed));
 
     SetHelp();
     Display();
@@ -760,10 +761,10 @@ void cCMDImageRead::SetHelp(void)
   {
     case 1:
     case 2:
-      cOsdMenu::SetHelp(tr("read in"), NULL, NULL, tr("Select"));
+      cOsdMenu::SetHelp(tr("Read in"), NULL, NULL, tr("Select"));
       break;
     default:
-      cOsdMenu::SetHelp(tr("read in"), NULL, NULL, NULL);
+      cOsdMenu::SetHelp(tr("Read in"), NULL, NULL, NULL);
       break;
   }
 }
@@ -795,20 +796,20 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
       case kRed:
         if(isempty(File))
         {
-          OsdMsg(mtError,tr("invalid file name for DVD-Image"));
+          OsdMsg(mtError,tr("Invalid file name for DVD-Image"));
           return osContinue;
         }
         if(ImgType < 0)
         {
-          OsdMsg(mtError,tr("No Imagetype selected"));
+          OsdMsg(mtError,tr("No type of image selected"));
           return osContinue;
         }
         if(isempty(Dir))
         {
-          if(!Interface->Confirm(tr("No Directory selected. Use Standard?")))
+          if(!Interface->Confirm(tr("No directory selected. Use Standard?")))
             return osContinue;
         }
-        if(Interface->Confirm(tr("Now Read?")))
+        if(Interface->Confirm(tr("Now read?")))
         {
           char *buffer = NULL;
           if(isempty(Dir))

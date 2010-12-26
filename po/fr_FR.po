@@ -8,9 +8,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: vdr-dvdswitch-plugin 0.1.6\n"
+"Project-Id-Version: vdr-dvdswitch-plugin 0.1.7\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2010-12-26 17:07+0100\n"
+"POT-Creation-Date: 2010-12-26 22:28+0100\n"
 "PO-Revision-Date: 2010-12-21 12:59+0100\n"
 "Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -67,11 +67,11 @@ msgstr "Effacer"
 msgid "Move"
 msgstr "Déplacer"
 
-msgid "Edit Directories"
+msgid "Edit directories"
 msgstr "Editer le dossier"
 
-msgid "No rights to change inside this directory!"
-msgstr ""
+msgid "No rights to access this directory!"
+msgstr "pas d'autorisation de création"
 
 msgid "Really delete?"
 msgstr "Vraiment effacer?"
@@ -82,9 +82,6 @@ msgstr "Le dossier n'est pas vide. L'effacer quand même?"
 msgid "Missing rights to create directory!"
 msgstr "pas d'autorisation de création"
 
-msgid "New:"
-msgstr "Nouveau:"
-
 msgid " abcdefghijklmnopqrstuvwxyz0123456789-.#~"
 msgstr " aàbcçdeéèfghijklmnopqrstuvwxyz0123456789-.#~"
 
@@ -93,9 +90,6 @@ msgstr "Le dossier existe déjà"
 
 msgid "Missing rights to rename!"
 msgstr "pas d'autorisation d'écriture"
-
-msgid "Rename:"
-msgstr "Renommer:"
 
 msgid " abcdefghijklmnopqrstuvwxyz0123456789-_.#~"
 msgstr ""
@@ -109,7 +103,7 @@ msgstr "Le Writescript indiqué n'existe pas!"
 msgid "Can't execute Writescript!"
 msgstr "Le Writescript ne peut pas être effectué!"
 
-msgid "Burn Now?"
+msgid "Burn now?"
 msgstr "Graver maintenant?"
 
 msgid "Read DVD"
@@ -130,22 +124,22 @@ msgstr "Nom"
 msgid "Directory"
 msgstr "Dossier"
 
-msgid "Imagetype"
+msgid "Type of image"
 msgstr "Type d'image"
 
-msgid "read in"
+msgid "Read in"
 msgstr "Lire"
 
-msgid "invalid file name for DVD-Image"
+msgid "Invalid file name for DVD-Image"
 msgstr "Le nom de fichier pour DVD-Image n'est pas valable"
 
-msgid "No Imagetype selected"
+msgid "No type of image selected"
 msgstr "Aucun type d'image n'est sélectioné!"
 
-msgid "No Directory selected. Use Standard?"
+msgid "No directory selected. Use Standard?"
 msgstr "Aucun dossier n'est choisi. Utiliser le standard?"
 
-msgid "Now Read?"
+msgid "Now read?"
 msgstr "Lire maintenant?"
 
 msgid "Allows playback of DVD images"
@@ -208,8 +202,8 @@ msgstr "Montant"
 msgid "descending"
 msgstr "Descendant"
 
-msgid "none Function"
-msgstr "pas de fonction"
+msgid "None function"
+msgstr "Pas de fonction"
 
 msgid "Dir. Management"
 msgstr "Gèrer les dossiers"
@@ -238,10 +232,10 @@ msgstr "Graver"
 msgid "Create"
 msgstr "Créer"
 
-msgid "Generic Settings"
+msgid "Generic settings"
 msgstr "Configuration générale"
 
-msgid "\tHide Mainmenu Entry"
+msgid "\tHide mainmenu entry"
 msgstr "\tCache le menu"
 
 msgid "\t  Name"
@@ -250,16 +244,16 @@ msgstr "\t  Nom"
 msgid "\tImage Dir."
 msgstr "\tDossier image"
 
-msgid "\tImagetypes"
+msgid "\tType of images"
 msgstr "\tType d'images"
 
-msgid "\tView free DiskSpace"
+msgid "\tView free disk space"
 msgstr "\tAffiche l'espace disponible"
 
-msgid "Display Settings"
+msgid "Display settings"
 msgstr "Configuration de l'affichage"
 
-msgid "\tDisplay Mode"
+msgid "\tDisplay mode"
 msgstr "\tMode d'affichage"
 
 msgid "\t  Category Type"
@@ -274,7 +268,7 @@ msgstr "\tClassement alphabétique"
 msgid "\tvisible DVD-Drive"
 msgstr "\tDVD-LW visible"
 
-msgid "Special Display Settings"
+msgid "Special display settings"
 msgstr "Configuration des détails d'affichage"
 
 msgid "\tvisible Image-Type Col"
@@ -358,46 +352,46 @@ msgstr "\tTouche OK"
 msgid "to adjust"
 msgstr "Configuration"
 
-msgid "Imagetypes"
+msgid "Type of images"
 msgstr "Type d'images"
 
 msgid "Edit"
 msgstr ""
 
-msgid "really delete Entry?"
-msgstr "Vraiment effacer les entrées"
+msgid "Really delete entry?"
+msgstr "Vraiment effacer les entrées?"
 
 msgid "File"
 msgstr "Fichier"
 
-msgid "Description:"
-msgstr "Description:"
+msgid "Description"
+msgstr "Description"
 
-msgid "Type-Title:"
-msgstr "Type de Titre:"
+msgid "Type title"
+msgstr "Type de Titre"
 
-msgid "Image Type"
+msgid "Image type"
 msgstr "Type d'image"
 
-msgid "Directory contains:"
-msgstr "Dossier contient:"
+msgid "Directory contains"
+msgstr "Dossier contient"
 
-msgid "File Extension:"
-msgstr "Extension de fichier:"
+msgid "File extension"
+msgstr "Extension de fichier"
 
-msgid "Hide Extension"
+msgid "Hide extension"
 msgstr "Extension non visible"
 
 msgid "'Description' must not empty!"
 msgstr "La déscription ne peut pas être vide!"
 
-msgid "'Type-Title' must not empty!"
+msgid "'Type title' must not empty!"
 msgstr "'Type titre' ne peut pas être vide!"
 
 msgid "'Directory contains' must not empty!"
 msgstr "Le dossier 'contient' ne peut pas être vide!"
 
-msgid "'File Extension' must not empty!"
+msgid "'File extension' must not empty!"
 msgstr "'Le suffix de ficher' ne doit pas être vide!"
 
 msgid "No rights to delete image"
