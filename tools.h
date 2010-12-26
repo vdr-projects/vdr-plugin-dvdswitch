@@ -20,7 +20,7 @@ class cFileDelThread : public cThread
     virtual void Action(void);
   public:
     cFileDelThread(const char *file);
-    ~cFileDelThread(void);
+    virtual ~cFileDelThread(void);
     bool OK(void) { return Ok; };
 };
 
@@ -36,7 +36,7 @@ class cFileMoveThread : public cThread
     virtual void Action(void);
   public:
     cFileMoveThread(const char *file, char *dest);
-    ~cFileMoveThread(void);
+    virtual ~cFileMoveThread(void);
     bool OK(void) { return Ok; };
 };
 

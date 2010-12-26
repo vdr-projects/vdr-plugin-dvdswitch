@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <mntent.h>
 #include <vdr/tools.h>
 #include "commands.h"
 #include "imagelist.h"
@@ -853,3 +854,118 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
   return cOsdMenu::ProcessKey(Key);
 
 }
+
+cCMDImageReadThread::cCMDImageReadThread(char *file, char *dir, int imgtype, cImageList &ImageList)
+{
+  dsyslog("ReadThread created");
+  File = NULL;
+  Dir = NULL;
+  FileType = tNone;
+
+  cImageListItem *item = ImageList.Get(imgtype);
+  if(imgtype >= 0 && file && dir)
+  {
+    if(item->GetFType() == tFile) {
+      if(0 >= asprintf(&File, "%s%s", file, item->GetValue()))
+        return;
+    }
+    else
+      File = strdup(file);
+    Dir = strdup(dir);
+    FileType = item->GetFType();
+  }
+}
+
+cCMDImageReadThread::~cCMDImageReadThread(void)
+{
+  free(File);
+  free(Dir);
+}
+
+void cCMDImageReadThread::Action(void)
+{
+  dsyslog("ReadThread started");
+  if(File && Dir && FileType != tNone)
+  {
+    dsyslog("ReadThread executed");
+    char *cmd = NULL;
+    char *mountpoint = NULL;
+
+    char buffer[MaxFileName];
+    if(realpath(DVDSwitchSetup.DVDLinkOrg, buffer)) {
+
+	    FILE *f = setmntent("/etc/fstab", "r");
+      if(f) {
+	      struct mntent *m;
+	      while ((m = getmntent(f))) {
+		      dsyslog("%s %s %s", m->mnt_fsname, m->mnt_dir, m->mnt_type);
+          if(   m && m->mnt_fsname && m->mnt_dir &&
+                (0 == strcmp(m->mnt_fsname, DVDSwitchSetup.DVDLinkOrg)
+              || 0 == strcmp(m->mnt_fsname, buffer))) {
+                  mountpoint = strdup(m->mnt_dir);
+                  break;
+           }
+
+	      }
+	      endmntent(f);
+      }
+      if(0 < asprintf(&cmd,
+                "'%s' '%s' '%s' '%s' '%s' '%s'",
+                DVDSwitchSetup.DVDReadScript,
+                Dir,
+                File,
+                buffer,
+                mountpoint ? mountpoint : "",
+                (FileType == tFile) ? "IMAGE" : "DIR")) {
+        dsyslog("ReadThread call: %s", cmd);
+        int rc = system(cmd);
+        dsyslog("ReadThread return value: %i", rc);
+        FREENULL(cmd);
+      }
+      FREENULL(mountpoint);
+    }
+  }
+  delete(this);
+}
+
+
+/******************************************************************************/
+
+cCMDImageBurnThread::cCMDImageBurnThread(const char *file, eFileInfo type)
+{
+  dsyslog("BurnThread created");
+  File = NULL;
+  FileType = tNone;
+
+  if(file && type != tNone)
+  {
+    File = strdup(file);
+    FileType = type;
+  }
+}
+cCMDImageBurnThread::~cCMDImageBurnThread(void) 
+{ 
+  free(File); 
+}
+
+void cCMDImageBurnThread::Action(void)
+{
+  dsyslog("BurnThread started");
+  if(File && FileType != tNone)
+  {
+    dsyslog("BurnThread executed");
+    char *cmd;
+    if(0 < asprintf(&cmd,
+              "'%s' '%s' '%s'",
+              DVDSwitchSetup.DVDWriteScript,
+              File,
+              FileType == tFile ? "IMAGE" : "DIR")) {
+      dsyslog("BurnThread call: %s", cmd);
+      int rc = system(cmd);
+      dsyslog("BurnThread return value: %i", rc);
+      FREENULL(cmd);
+    }
+  }
+  delete(this);
+};
+
