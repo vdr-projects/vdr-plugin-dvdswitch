@@ -731,7 +731,19 @@ cCMDImageRead::cCMDImageRead(cImageList &imagelist)
   {
     dsyslog("dvdswitch: query name of volume %s",DVDSwitchSetup.DVDLinkOrg);
     int err = volname(DVDSwitchSetup.DVDLinkOrg, File,sizeof(File));
-    if(0 != err) {
+    if(0 == err) {
+      // Capitalization - lowercase name, except first character
+      bool s;
+      unsigned int n;
+      for (n = 0,s = true; n < sizeof(File) && File[n] != '\0'; ++n) {
+        if (isspace(File[n]) || '_' == File[n]) {
+          File[n] = ' ';
+          s = true;
+        } else if(s) { s = false; }
+               else  { File[n] = tolower(File[n]); }
+      }
+
+    } else {
       esyslog("dvdswitch: Can't query name of volume! %d", err);
       OSDErrorNumMsg(err, tr("Can't query name of volume!"));
       strcpy(File, "\0");
