@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-dvdswitch-plugin 0.1.7\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2010-12-30 09:36+0100\n"
+"POT-Creation-Date: 2011-01-12 20:59+0100\n"
 "PO-Revision-Date: 2010-12-21 12:59+0100\n"
 "Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -223,10 +223,10 @@ msgstr "Toutes avec cat."
 msgid "Directories"
 msgstr "Dossiers"
 
-msgid "Image-Type"
+msgid "Image type"
 msgstr "Type d'image"
 
-msgid "File-Type"
+msgid "File type"
 msgstr "Type de fichier"
 
 msgid "none"
@@ -370,9 +370,6 @@ msgstr "Description"
 msgid "Type title"
 msgstr "Type de Titre"
 
-msgid "Image type"
-msgstr "Type d'image"
-
 msgid "Directory contains"
 msgstr "Dossier contient"
 
@@ -402,3 +399,4 @@ msgstr ""
 
 msgid "No rights to move image"
 msgstr "pas d'autorisation de création"
+

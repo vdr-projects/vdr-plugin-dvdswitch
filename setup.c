@@ -230,9 +230,9 @@ void cMenuSetupDVDSwitch::Set(void)
     DModes[2] = tr("Directories");
 
     static const char *CTypes[3];
-    CTypes[0] = tr("Image-Type");
+    CTypes[0] = tr("Image type");
     CTypes[1] = tr("Directories");
-    CTypes[2] = tr("File-Type");
+    CTypes[2] = tr("File type");
 
     static const char *SModes[3];
     SModes[0] = tr("none");
