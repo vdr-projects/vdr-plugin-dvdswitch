@@ -6,7 +6,6 @@
  * $Id$
  */
 
-#include <getopt.h>
 #include <unistd.h>
 #include <vdr/plugin.h>
 #include "helpers.h"
@@ -74,37 +73,7 @@ const char *cPluginDvdswitch::CommandLineHelp(void)
 
 bool cPluginDvdswitch::ProcessArgs(int argc, char *argv[])
 {
-  static struct option long_options[] = {
-    { "readscript",   required_argument, NULL, 'r' },
-    { "writescript",  required_argument, NULL, 'w' },
-    { "imagedir",     required_argument, NULL, 'i' },
-    { NULL }
-  };
-
-  int c = 0;
-  optind = 1; //default for getopt
-
-  while((c = getopt_long(argc, argv, "r:w:i:", long_options, NULL)) != -1)
-  {
-    switch(c)
-    {
-      case 'r':
-        strn0cpy(DVDSwitchSetup.DVDReadScript, optarg, memberof(DVDSwitchSetup.DVDReadScript));
-        break;
-      case 'w':
-        strn0cpy(DVDSwitchSetup.DVDWriteScript, optarg, memberof(DVDSwitchSetup.DVDWriteScript));
-        break;
-      case 'i':
-        strn0cpy(DVDSwitchSetup.ImageDir, optarg, memberof(DVDSwitchSetup.ImageDir));
-        DVDSwitchSetup.ImageDirPerParam = true;
-        break;
-      default:
-        esyslog("DVDSwitch: unknown parameter: %c", c);
-        break;
-    }
-  }
-  
-  return true;
+  return DVDSwitchSetup.ProcessArgs(argc,argv);
 }
 
 bool cPluginDvdswitch::Initialize(void)
@@ -112,7 +81,6 @@ bool cPluginDvdswitch::Initialize(void)
   // Initialize any background activities the plugin shall perform.
   dsyslog("dvdswitch: Initialize plugin");
 
-  DVDSwitchSetup.SetConfDir(ConfigDirectory(Name()));
   cDVDPlugin::Init();
   ImageList.Init();
   DVDSwitchSetup.Init();

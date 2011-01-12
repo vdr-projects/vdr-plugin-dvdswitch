@@ -1,3 +1,4 @@
+#include <getopt.h>
 #include "imagelist.h"
 #include "setup.h"
 #include "menu.h"
@@ -60,38 +61,45 @@ cDVDSwitchSetup::~ cDVDSwitchSetup(void)
 {
 }
 
+bool cDVDSwitchSetup::ProcessArgs(int argc, char *argv[])
+{
+  static struct option long_options[] = {
+    { "readscript",   required_argument, NULL, 'r' },
+    { "writescript",  required_argument, NULL, 'w' },
+    { "imagedir",     required_argument, NULL, 'i' },
+    { NULL }
+  };
+
+  int c = 0;
+  optind = 1; //default for getopt
+
+  while((c = getopt_long(argc, argv, "r:w:i:", long_options, NULL)) != -1)
+  {
+    switch(c)
+    {
+      case 'r':
+        strn0cpy(DVDReadScript, optarg, memberof(DVDReadScript));
+        break;
+      case 'w':
+        strn0cpy(DVDWriteScript, optarg, memberof(DVDWriteScript));
+        break;
+      case 'i':
+        strn0cpy(ImageDir, optarg, memberof(ImageDir));
+        ImageDirPerParam = true;
+        break;
+      default:
+        esyslog("DVDSwitch: unknown parameter: %c", c);
+        break;
+    }
+  }
+  
+  return true;
+}
+
 void cDVDSwitchSetup::Init(void)
 {
   if (!CustomMenuName)
     strncpy(MenuName, tr(MenuName),memberof(MenuName));
-
-  MaxDModes = 3;
-  DModes[0] = tr("All Images");
-  DModes[1] = tr("All with Cat.");
-  DModes[2] = tr("Directories");
-
-  MaxCTypes = 3;
-  CTypes[0] = tr("Image-Type");
-  CTypes[1] = tr("Directories");
-  CTypes[2] = tr("File-Type");
-
-  MaxSModes = 3;
-  SModes[0] = tr("none");
-  SModes[1] = tr("ascending");
-  SModes[2] = tr("descending");
-
-  MaxCommands = 11;
-  Commands[0] = tr("None function");
-  Commands[1] = tr("Dir. Management");
-  Commands[2] = tr("Tray open");
-  Commands[3] = tr("Tray close");
-  Commands[4] = tr("Play");
-  Commands[5] = tr("Image rename");
-  Commands[6] = tr("Image move");
-  Commands[7] = tr("Image delete");
-  Commands[8] = tr("Image burn");
-  Commands[9] = tr("Image create");
-  Commands[10] = tr("Commands");
 
   CommandsShortName[0] = NULL;
   CommandsShortName[1] = tr("Dir.Mgmt.");
@@ -111,7 +119,7 @@ bool cDVDSwitchSetup::SetupParse(const char *Name, const char *Value, cImageList
   if (!strcasecmp(Name, "HideMenuEntry")) HideMenuEntry = atoi(Value);
   if (!strcasecmp(Name, "MenuName"))
   {
-    strn0cpy(MenuName, Value, 50);
+    strn0cpy(MenuName, Value, memberof(MenuName));
     CustomMenuName = true;
   }
   if (!strcasecmp(Name, "ImageDir") && !ImageDirPerParam) strn0cpy(ImageDir, Value, memberof(ImageDir));
@@ -198,12 +206,12 @@ void cMenuSetupDVDSwitch::Set(void)
     if (!data.HideMenuEntry)
       Add(new cMenuEditStrItem(tr("\t  Name"),
           data.MenuName,
-          50,
+          memberof(data.MenuName),
           tr(" abcdefghijklmnopqrstuvwxyz0123456789-.#~")));
     if(!data.ImageDirPerParam)
       Add(new cMenuEditStrItem(tr("\tImage Dir."),
           data.ImageDir,
-          MaxFileName,
+          memberof(data.ImageDir),
           "abcdefghijklmnopqrstuvwxyz0123456789-.#~/"));
     Add(new cOsdItem(tr("\tType of images")));
     Add(new cMenuEditBoolItem(tr("\tView free disk space"), &data.ViewFreeDiskSpace));
@@ -216,12 +224,28 @@ void cMenuSetupDVDSwitch::Set(void)
   ViewDisplayPos = Count() - 1;
   if(ViewDisplay)
   {
-    Add(new cMenuEditStraItem(tr("\tDisplay mode"), &data.DisplayMode, data.MaxDModes, data.DModes));
+    static const char *DModes[3];
+    DModes[0] = tr("All Images");
+    DModes[1] = tr("All with Cat.");
+    DModes[2] = tr("Directories");
+
+    static const char *CTypes[3];
+    CTypes[0] = tr("Image-Type");
+    CTypes[1] = tr("Directories");
+    CTypes[2] = tr("File-Type");
+
+    static const char *SModes[3];
+    SModes[0] = tr("none");
+    SModes[1] = tr("ascending");
+    SModes[2] = tr("descending");
+
+    Add(new cMenuEditStraItem(tr("\tDisplay mode"), &data.DisplayMode, memberof(DModes), DModes));
+
     if(data.DisplayMode == 1)
-      Add(new cMenuEditStraItem(tr("\t  Category Type"), &data.CategorieType, data.MaxCTypes, data.CTypes));
+      Add(new cMenuEditStraItem(tr("\t  Category Type"), &data.CategorieType, memberof(CTypes), CTypes));
     if(data.DisplayMode > 0)
       Add(new cMenuEditBoolItem(tr("\t  invisible empty Dir's/Cat."), &data.HideEmptyDirs));
-    Add(new cMenuEditStraItem(tr("\tAlphabetic Sort"), &data.SortMode, data.MaxSModes, data.SModes));
+    Add(new cMenuEditStraItem(tr("\tAlphabetic Sort"), &data.SortMode, memberof(SModes), SModes));
     Add(new cMenuEditBoolItem(tr("\tvisible DVD-Drive"), &data.DisplayDVDDevice));
     Add(new cOsdItem("------------------------------------------------------------------------------------------"));
     item = Last();
@@ -277,21 +301,34 @@ void cMenuSetupDVDSwitch::Set(void)
   ViewKeyPos = Count() - 1;
   if(ViewKey)
   {
-    Add(new cMenuEditStraItem(tr("\tKey 1"), &data.k1, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey 2"), &data.k2, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey 3"), &data.k3, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey 4"), &data.k4, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey 5"), &data.k5, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey 6"), &data.k6, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey 7"), &data.k7, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey 8"), &data.k8, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey 9"), &data.k9, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey 0"), &data.k0, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey Red"), &data.kRed, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey Green"), &data.kGreen, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey Yellow"), &data.kYellow, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey Blue"), &data.kBlue, data.MaxCommands, data.Commands));
-    Add(new cMenuEditStraItem(tr("\tKey OK"), &data.kOk, data.MaxCommands, data.Commands));
+    static const char *Commands[10];
+    Commands[0] = tr("None function");
+    Commands[1] = tr("Dir. Management");
+    Commands[2] = tr("Tray open");
+    Commands[3] = tr("Tray close");
+    Commands[4] = tr("Play");
+    Commands[5] = tr("Image rename");
+    Commands[6] = tr("Image move");
+    Commands[7] = tr("Image delete");
+    Commands[8] = tr("Image burn");
+    Commands[9] = tr("Image create");
+    Commands[10] = tr("Commands");
+
+    Add(new cMenuEditStraItem(tr("\tKey 1"), &data.k1, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey 2"), &data.k2, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey 3"), &data.k3, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey 4"), &data.k4, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey 5"), &data.k5, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey 6"), &data.k6, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey 7"), &data.k7, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey 8"), &data.k8, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey 9"), &data.k9, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey 0"), &data.k0, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey Red"), &data.kRed, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey Green"), &data.kGreen, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey Yellow"), &data.kYellow, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey Blue"), &data.kBlue, memberof(Commands), Commands));
+    Add(new cMenuEditStraItem(tr("\tKey OK"), &data.kOk, memberof(Commands), Commands));
   }
 
   SetCurrent(Get(current));

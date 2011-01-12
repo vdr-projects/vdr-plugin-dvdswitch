@@ -15,15 +15,9 @@ class cDVDSwitchSetup
     bool ImageDirPerParam;
     int ViewFreeDiskSpace;
     
-    int MaxDModes;
-    const char *DModes[10];
     int DisplayMode;
-    int MaxCTypes;
-    const char *CTypes[10];
     int CategorieType;
     int HideEmptyDirs;
-    int MaxSModes;
-    const char *SModes[10];
     int SortMode;
     int DisplayDVDDevice;
 
@@ -39,16 +33,13 @@ class cDVDSwitchSetup
 
     int JumpCatByKey;
 
-    char ConfigDirectory[MaxFileName];
     bool DVDPluginExist;
     char DVDLink[MaxFileName];
     char DVDLinkOrg[MaxFileName];
     char DVDReadScript[MaxFileName];
     char DVDWriteScript[MaxFileName];
 
-    int MaxCommands;
-    const char *Commands[15];
-    const char *CommandsShortName[15];
+    const char *CommandsShortName[10];
     int k1;
     int k2;
     int k3;
@@ -70,13 +61,9 @@ class cDVDSwitchSetup
     void Init(void);
     bool SetupParse(const char *Name, const char *Value, cImageList &ImageList);
 
-    void SetConfDir(const char *value)
-    {
-      strncpy(ConfigDirectory, value, memberof(ConfigDirectory));
-      strncpy(DVDLink, ConfigDirectory, memberof(DVDLink));
-      strncat(DVDLink, "/dvdlink", memberof(DVDLink));
-    }
     void SetDVDDevice(const char *value) { strncpy(DVDLinkOrg, value, memberof(DVDLinkOrg)); }
+
+    bool ProcessArgs(int argc, char *argv[]);
 };
 
 class cMenuSetupDVDSwitch : public cMenuSetupPage

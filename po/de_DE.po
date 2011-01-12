@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-dvdswitch-plugin 0.1.7\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2010-12-26 22:28+0100\n"
+"POT-Creation-Date: 2010-12-30 09:36+0100\n"
 "PO-Revision-Date: 2009-10-03 14:03+0200\n"
 "Last-Translator:\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -173,45 +173,6 @@ msgstr "ohne Kategorie"
 msgid "DVD-Drive"
 msgstr "DVD-Laufwerk"
 
-msgid "All Images"
-msgstr "Alle Images"
-
-msgid "All with Cat."
-msgstr "Alle mit Kat."
-
-msgid "Directories"
-msgstr "Verzeichnisse"
-
-msgid "Image-Type"
-msgstr "Image-Typ"
-
-msgid "File-Type"
-msgstr "Datei-Typ"
-
-msgid "none"
-msgstr "Keine"
-
-msgid "ascending"
-msgstr "Aufsteigend"
-
-msgid "descending"
-msgstr "Absteigend"
-
-msgid "None function"
-msgstr "Keine Funktion"
-
-msgid "Dir. Management"
-msgstr "Verz. Management"
-
-msgid "Tray open"
-msgstr "DVD öffnen"
-
-msgid "Tray close"
-msgstr "DVD schließen"
-
-msgid "Image create"
-msgstr "Image erstellen"
-
 msgid "Dir.Mgmt."
 msgstr "Verz.Mgmt."
 
@@ -247,6 +208,30 @@ msgstr "\tZeige freien Plattenplatz"
 
 msgid "Display settings"
 msgstr "Anzeige Einstellungen"
+
+msgid "All Images"
+msgstr "Alle Images"
+
+msgid "All with Cat."
+msgstr "Alle mit Kat."
+
+msgid "Directories"
+msgstr "Verzeichnisse"
+
+msgid "Image-Type"
+msgstr "Image-Typ"
+
+msgid "File-Type"
+msgstr "Datei-Typ"
+
+msgid "none"
+msgstr "Keine"
+
+msgid "ascending"
+msgstr "Aufsteigend"
+
+msgid "descending"
+msgstr "Absteigend"
 
 msgid "\tDisplay mode"
 msgstr "\tAnzeige Modus"
@@ -298,6 +283,21 @@ msgstr "\tKat.sprung bei Links/Rechts"
 
 msgid "Key allocation"
 msgstr "Tastenbelegung"
+
+msgid "None function"
+msgstr "Keine Funktion"
+
+msgid "Dir. Management"
+msgstr "Verz. Management"
+
+msgid "Tray open"
+msgstr "DVD öffnen"
+
+msgid "Tray close"
+msgstr "DVD schließen"
+
+msgid "Image create"
+msgstr "Image erstellen"
 
 msgid "\tKey 1"
 msgstr "\tTaste 1"
@@ -397,4 +397,3 @@ msgstr "Operation fehlgeschlagen"
 
 msgid "No rights to move image"
 msgstr "Keine Berechtigung zum Verschieben des Images"
-

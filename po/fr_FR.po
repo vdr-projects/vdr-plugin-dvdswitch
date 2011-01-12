@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-dvdswitch-plugin 0.1.7\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2010-12-26 22:28+0100\n"
+"POT-Creation-Date: 2010-12-30 09:36+0100\n"
 "PO-Revision-Date: 2010-12-21 12:59+0100\n"
 "Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -178,45 +178,6 @@ msgstr "sans catégorie"
 msgid "DVD-Drive"
 msgstr "Lecteur de DVD"
 
-msgid "All Images"
-msgstr "Toutes les images"
-
-msgid "All with Cat."
-msgstr "Toutes avec cat."
-
-msgid "Directories"
-msgstr "Dossiers"
-
-msgid "Image-Type"
-msgstr "Type d'image"
-
-msgid "File-Type"
-msgstr "Type de fichier"
-
-msgid "none"
-msgstr "sans"
-
-msgid "ascending"
-msgstr "Montant"
-
-msgid "descending"
-msgstr "Descendant"
-
-msgid "None function"
-msgstr "Pas de fonction"
-
-msgid "Dir. Management"
-msgstr "Gèrer les dossiers"
-
-msgid "Tray open"
-msgstr "Ouvrir le tiroir du lecteur DVD"
-
-msgid "Tray close"
-msgstr "Fermer le tiroir du lecteur DVD"
-
-msgid "Image create"
-msgstr "Créer une image"
-
 msgid "Dir.Mgmt."
 msgstr "Gèrer dos."
 
@@ -252,6 +213,30 @@ msgstr "\tAffiche l'espace disponible"
 
 msgid "Display settings"
 msgstr "Configuration de l'affichage"
+
+msgid "All Images"
+msgstr "Toutes les images"
+
+msgid "All with Cat."
+msgstr "Toutes avec cat."
+
+msgid "Directories"
+msgstr "Dossiers"
+
+msgid "Image-Type"
+msgstr "Type d'image"
+
+msgid "File-Type"
+msgstr "Type de fichier"
+
+msgid "none"
+msgstr "sans"
+
+msgid "ascending"
+msgstr "Montant"
+
+msgid "descending"
+msgstr "Descendant"
 
 msgid "\tDisplay mode"
 msgstr "\tMode d'affichage"
@@ -303,6 +288,21 @@ msgstr "\tSaut de cat. avec gauche/droite"
 
 msgid "Key allocation"
 msgstr "Disposition du clavier"
+
+msgid "None function"
+msgstr "Pas de fonction"
+
+msgid "Dir. Management"
+msgstr "Gèrer les dossiers"
+
+msgid "Tray open"
+msgstr "Ouvrir le tiroir du lecteur DVD"
+
+msgid "Tray close"
+msgstr "Fermer le tiroir du lecteur DVD"
+
+msgid "Image create"
+msgstr "Créer une image"
 
 msgid "\tKey 1"
 msgstr "\tTouche 1"
@@ -402,4 +402,3 @@ msgstr ""
 
 msgid "No rights to move image"
 msgstr "pas d'autorisation de création"
-
