@@ -12,7 +12,7 @@ class cDVDPluginThread : public cThread
   protected:
     virtual void Action(void);
   public:
-    cDVDPluginThread(char *image = NULL);
+    cDVDPluginThread(const char *image = NULL);
     ~cDVDPluginThread(void);
 };
 
@@ -29,11 +29,11 @@ class cDVDPlugin
   public:
     static void Start(char *image = NULL);
     static void Exit(void);
-    static void ChangeLink(char *target);
+    static void ChangeLink(const char *target, const char *link);
     static void Init(void)
     {
       DetectDevice();
-      ChangeLink(DVDSwitchSetup.DVDLinkOrg);
+      ChangeLink(DVDSwitchSetup.DVDLinkOrg, DVDSwitchSetup.DVDLink);
       SetLink();
     }
     static void Finish(void)

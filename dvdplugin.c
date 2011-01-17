@@ -5,7 +5,7 @@
 #include "imagelist.h"
 #include "dvdplugin.h"
 
-cDVDPluginThread::cDVDPluginThread(char *image)
+cDVDPluginThread::cDVDPluginThread(const char *image)
   :cThread("DVDPluginThread")
 {
   dsyslog("dvdswitch: Create new DVD Thread");
@@ -24,11 +24,10 @@ void cDVDPluginThread::Action(void)
 {
   dsyslog("dvdswitch: DVD Thread started");
   if(Image)
-    cDVDPlugin::ChangeLink(Image);
+    cDVDPlugin::ChangeLink(Image, DVDSwitchSetup.DVDLink);
 
 #if VDRVERSNUM < 10332
   cPlugin *plugin = cPluginManager::GetPlugin("dvd");
-
   if(plugin)
   {
     plugin->MainMenuAction();
@@ -41,7 +40,7 @@ void cDVDPluginThread::Action(void)
 
   cCondWait::SleepMs(2 * 1000);
   cControl *control = cControl::Control();
-  dsyslog(control ? "DVD control found" : "DVD control not found");
+  dsyslog("dvdswitch: DVD control %s",control ? "found" : "not found");
   while(control)
   {
     cCondWait::SleepMs(5 * 1000);
@@ -50,7 +49,7 @@ void cDVDPluginThread::Action(void)
   dsyslog("dvdswitch: DVD control closed");
 
   if(Image)
-    cDVDPlugin::ChangeLink(DVDSwitchSetup.DVDLinkOrg);
+    cDVDPlugin::ChangeLink(DVDSwitchSetup.DVDLinkOrg, DVDSwitchSetup.DVDLink);
 
   dsyslog("dvdswitch: DVD Thread closed");
   cDVDPlugin::Exit();
@@ -136,7 +135,6 @@ void cDVDPlugin::SetLink(void)
     if(0 < asprintf(&argv[1], "--dvd=%s", DVDSwitchSetup.DVDLink)) {
 
       cPlugin *plugin = cPluginManager::GetPlugin("dvd");
-
       if(plugin)
       {
         optind = 0; //reset for getopt
@@ -164,20 +162,20 @@ void cDVDPlugin::Exit(void)
     DELETENULL(thread);
 }
 
-void cDVDPlugin::ChangeLink(char *target)
+void cDVDPlugin::ChangeLink(const char *target,const char *link)
 {
-  if(target)
+  if(target && link)
   {
-    isyslog("dvdswitch: create link %s to %s", DVDSwitchSetup.DVDLink, target);
+    isyslog("dvdswitch: create link %s to %s", link, target);
     
-    if(-1 == unlink(DVDSwitchSetup.DVDLink) && errno != ENOENT) {
+    if(-1 == unlink(link) && errno != ENOENT) {
       char* szErr = get_strerror(errno);
-      esyslog("dvdswitch: could not remove symbolic link %s : %s (%d)", DVDSwitchSetup.DVDLink, szErr ? szErr : "", errno);
+      esyslog("dvdswitch: could not remove symbolic link %s : %s (%d)", link, szErr ? szErr : "", errno);
       if(szErr) free(szErr);
     }
-    if(-1 == symlink(target, DVDSwitchSetup.DVDLink)) {
+    if(-1 == symlink(target, link)) {
       char* szErr = get_strerror(errno);
-      esyslog("dvdswitch: could not create link %s to %s :%s (%d)", DVDSwitchSetup.DVDLink, target, szErr ? szErr : "", errno);
+      esyslog("dvdswitch: could not create link %s to %s :%s (%d)", link, target, szErr ? szErr : "", errno);
       if(szErr) free(szErr);
     }
   }

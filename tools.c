@@ -139,7 +139,7 @@ void cFileMoveThread::Action(void)
       errno = 0;
       if(!cFileCMD::Rn(File, buffer)) {
         char* err = get_strerror(errno);
-        esyslog("dvdswitch: could not move file failed %s to %s :%s", File, buffer, err ? err : "");
+        esyslog("dvdswitch: could not move file %s to %s :%s", File, buffer, err ? err : "");
         if(err) free(err);
       }
       free(buffer);

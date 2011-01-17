@@ -81,6 +81,7 @@ bool cPluginDvdswitch::Initialize(void)
   // Initialize any background activities the plugin shall perform.
   dsyslog("dvdswitch: Initialize plugin");
 
+  DVDSwitchSetup.SetConfDir(ConfigDirectory(Name()));
   cDVDPlugin::Init();
   ImageList.Init();
   DVDSwitchSetup.Init();

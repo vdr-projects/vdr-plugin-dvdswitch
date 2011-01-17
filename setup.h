@@ -61,6 +61,12 @@ class cDVDSwitchSetup
     void Init(void);
     bool SetupParse(const char *Name, const char *Value, cImageList &ImageList);
 
+    void SetConfDir(const char *value)
+    {
+      strncpy(DVDLink, value, memberof(DVDLink));
+      strncat(DVDLink, "/dvdlink", memberof(DVDLink));
+    }
+
     void SetDVDDevice(const char *value) { strncpy(DVDLinkOrg, value, memberof(DVDLinkOrg)); }
 
     bool ProcessArgs(int argc, char *argv[]);
