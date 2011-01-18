@@ -513,42 +513,44 @@ eOSState cMainMenu::ProcessKey(eKeys Key)
             Display();
             return osContinue;
             break;
-          case kOk:
-            SetState(mmsNone);
-            DVDSwitchSetup.HideTypeCol = CMDImg->tmpHideTypeCol;
-            if(!isempty(CMDImg->NewFile))
-            {
-              int iRet = 0;
-              char *buffer = NULL;
-              char *buffer2 = NULL;
-              cFileInfo *info = new cFileInfo(CMDImg->Rename());
-              if(ImageList.IsHide(info->Extension()))
+          case kOk: {
+              eOSState nState = cOsdMenu::ProcessKey(Key);
+
+              SetState(mmsNone);
+              DVDSwitchSetup.HideTypeCol = CMDImg->tmpHideTypeCol;
+              if(!isempty(CMDImg->NewFile))
               {
-                buffer2 = strdup(info->Extension());
-                iRet = asprintf(&buffer, "%s/%s%s", info->Path(), stripspace(CMDImg->NewFile), buffer2);
-              }
-              else
-                iRet = asprintf(&buffer, "%s/%s", info->Path(), stripspace(CMDImg->NewFile));
-              DELETENULL(info);
-              if(iRet > 0) {
-                info = new cFileInfo(buffer);
-                if(!info->isExists())
+                int iRet = 0;
+                char *buffer = NULL;
+                char *buffer2 = NULL;
+                cFileInfo *info = new cFileInfo(CMDImg->Rename());
+                if(ImageList.IsHide(info->Extension()))
                 {
-                  if(cFileCMD::Rn(CMDImg->Rename(), buffer))
-                    MainMenuOptions.setLastSelectItemName(buffer);
+                  buffer2 = strdup(info->Extension());
+                  iRet = asprintf(&buffer, "%s/%s%s", info->Path(), stripspace(CMDImg->NewFile), buffer2);
                 }
                 else
-                  OsdMsg(mtWarning,tr("File exists in Directory"));
-                FREENULL(buffer);
+                  iRet = asprintf(&buffer, "%s/%s", info->Path(), stripspace(CMDImg->NewFile));
                 DELETENULL(info);
+                if(iRet > 0) {
+                  info = new cFileInfo(buffer);
+                  if(!info->isExists())
+                  {
+                    if(cFileCMD::Rn(CMDImg->Rename(), buffer))
+                      MainMenuOptions.setLastSelectItemName(buffer);
+                  }
+                  else
+                    OsdMsg(mtWarning,tr("File exists in Directory"));
+                  FREENULL(buffer);
+                  DELETENULL(info);
+                }
+                FREENULL(buffer2);
               }
-              FREENULL(buffer2);
+              DELETENULL(CMDImg);
+              Build(MainMenuOptions.CurrentDir());
+              Display();
+              return nState;
             }
-            DELETENULL(CMDImg);
-            Build(MainMenuOptions.CurrentDir());
-            Display();
-            return osContinue;
-            break;
           default:
             break;
         }
@@ -1024,7 +1026,7 @@ void cMainMenu::SetState(eMainMenuState state)
       SetState(mmsNone);
       Build(MainMenuOptions.CurrentDir());
       break;
-    case mmsImgRename:
+    case mmsImgRename: {
       DELETENULL(CMDImg);
       mItem = (cMainMenuItem*)Get(Current());
       if(mItem->Type() != iDVD)
@@ -1054,19 +1056,19 @@ void cMainMenu::SetState(eMainMenuState state)
         DVDSwitchSetup.HideTypeCol = 0;
         Build(MainMenuOptions.CurrentDir());
       }
-      SetCols(11);
+      const char* szRename = tr("Rename");
+      SetCols(strlen(szRename) + 3);
       mItem = (cMainMenuItem*)First();
       while(mItem)
       {
         if(mItem->Index() == Current())
         {
           info = new cFileInfo(mItem->FileName());
-          if(ImageList.IsHide(info->Extension()))
-            strn0cpy(CMDImg->NewFile, info->FileNameWithoutExt(), MaxFileName);
-          else
-            strn0cpy(CMDImg->NewFile, info->FileName(), MaxFileName);
+          strn0cpy(CMDImg->NewFile, 
+            ImageList.IsHide(info->Extension()) ? info->FileNameWithoutExt() : info->FileName(), 
+            memberof(CMDImg->NewFile));
           DELETENULL(info);
-          Ins(new cMenuEditStrItem(tr("Rename"), CMDImg->NewFile, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")),
+          Ins(new cMenuEditStrItem(szRename, CMDImg->NewFile, memberof(CMDImg->NewFile)),
               true,
               mItem);
           dmItem = mItem;
@@ -1078,6 +1080,7 @@ void cMainMenu::SetState(eMainMenuState state)
         Del(dmItem->Index());
       Display();
       break;
+      }
     default:
       break;
   }
