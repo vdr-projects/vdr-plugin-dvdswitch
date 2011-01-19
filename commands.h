@@ -125,6 +125,7 @@ class cCMDImageRead : public cOsdMenu
     char ImgTypeTxt[MaxFileName];
     int ImgType;
     cImageList &ImageList;
+    const char ** m_szItemTypes;
 
   public:
     cCMDImageRead(cImageList &ImageList);

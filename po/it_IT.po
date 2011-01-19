@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-dvdswitch-plugin 0.1.7\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2011-01-12 20:59+0100\n"
+"POT-Creation-Date: 2011-01-19 19:02+0100\n"
 "PO-Revision-Date: 2010-12-30 17:54+0100\n"
 "Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
 "Language-Team:  <vdr@linuxtv.org>\n"
@@ -80,17 +80,11 @@ msgstr "Directory non vuota. Eliminare comunque?"
 msgid "Missing rights to create directory!"
 msgstr "Permessi non validi per creare la directory!"
 
-msgid " abcdefghijklmnopqrstuvwxyz0123456789-.#~"
-msgstr " aáàbcdeéèfghiìîjklmnoòpqrstuùvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&°"
-
 msgid "Directory exists"
 msgstr "Directory esistente"
 
 msgid "Missing rights to rename!"
 msgstr "Permessi non validi per rinominare!"
-
-msgid " abcdefghijklmnopqrstuvwxyz0123456789-_.#~"
-msgstr "áàbcdeéèfghiìîjklmnoòpqrstuùvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&°"
 
 msgid "Insert"
 msgstr "Inserisci"
@@ -199,6 +193,9 @@ msgstr "\tNascondi voce menu princ."
 
 msgid "\t  Name"
 msgstr "\t  Nome"
+
+msgid " abcdefghijklmnopqrstuvwxyz0123456789-.#~"
+msgstr " aáàbcdeéèfghiìîjklmnoòpqrstuùvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&°"
 
 msgid "\tImage Dir."
 msgstr "\tDir. Immagine"
@@ -398,3 +395,5 @@ msgstr "Operazione fallita"
 msgid "No rights to move image"
 msgstr "Nessun permesso per spostare immagine"
 
+#~ msgid " abcdefghijklmnopqrstuvwxyz0123456789-_.#~"
+#~ msgstr "áàbcdeéèfghiìîjklmnoòpqrstuùvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&°"

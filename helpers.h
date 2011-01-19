@@ -18,7 +18,6 @@
 void OsdMsg(eMessageType Type, const char *Msg);
 void OSDErrorNumMsg(int err, const char* szDef);
 void ChangeChars(char *name, char *chars);
-void StrRepeat(const char *input, int count, char *dest);
 bool RegIMatch(const char *string,const char *pattern);
 char *get_strerror(int n);
 

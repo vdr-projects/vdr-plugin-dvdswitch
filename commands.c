@@ -376,7 +376,7 @@ eOSState cCMDDir::New(void)
     SetDir();
 
     cMainMenuItem *mItem = (cMainMenuItem*)First();
-    Ins(new cMenuEditStrItem(tr("New"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-.#~")),
+    Ins(new cMenuEditStrItem(tr("New"), Dir, memberof(Dir)),
         true,
         mItem);
     while(mItem)
@@ -463,7 +463,7 @@ eOSState cCMDDir::Edit(cMainMenuItem *mItem)
     if(!strcasecmp(mItem->FileName(), LastSelDir()))
     {
       dsyslog("dvdswitch: Directory: Edit: Item found: %s", mItem->FileName());
-      Ins(new cMenuEditStrItem(tr("Rename"), Dir, MaxFileName, tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~")),
+      Ins(new cMenuEditStrItem(tr("Rename"), Dir, memberof(Dir)),
           true,
           mItem);
       dmItem = mItem;
@@ -710,6 +710,7 @@ eOSState cCMDImage::Burn(const char *file)
 cCMDImageRead::cCMDImageRead(cImageList &imagelist)
   : cOsdMenu(tr("Read DVD"), 14)
   , ImageList(imagelist)
+  , m_szItemTypes(NULL)
 {
   dsyslog("dvdswitch: Read DVD Image");
 
@@ -750,12 +751,20 @@ cCMDImageRead::cCMDImageRead(cImageList &imagelist)
     }
     strcpy(Dir, "\0");
     strcpy(ImgTypeTxt, "\0");
-    ImgType = -1;
+    ImgType = 0;
 
-    const char* szAllowed = tr(" abcdefghijklmnopqrstuvwxyz0123456789-_.#~");
-    Add(new cMenuEditStrItem(tr("Name"), File, MaxFileName, szAllowed));
-    Add(new cMenuEditStrItem(tr("Directory"), Dir, MaxFileName, szAllowed));
-    Add(new cMenuEditStrItem(tr("Type of image"), ImgTypeTxt, MaxFileName, szAllowed));
+    const char ** m_szItemTypes = new const char *[ImageList.Count()];
+    cImageListItem *item = ImageList.First();
+    unsigned int n = 0;
+    while(item)
+    {
+      m_szItemTypes[n++] = item->GetLName();
+      item = ImageList.Next(item);
+    }
+
+    Add(new cMenuEditStrItem(tr("Name"), File, memberof(File)));
+    Add(new cMenuEditStrItem(tr("Directory"), Dir, memberof(Dir)));
+    Add(new cMenuEditStraItem(tr("Type of image"), &ImgType, n, m_szItemTypes));
 
     SetHelp();
     Display();
@@ -765,6 +774,8 @@ cCMDImageRead::cCMDImageRead(cImageList &imagelist)
 cCMDImageRead::~cCMDImageRead(void)
 {
   dsyslog("dvdswitch: Read DVD Image stopped");
+  if(m_szItemTypes)
+    delete m_szItemTypes;
 }
 
 void cCMDImageRead::SetHelp(void)
@@ -772,7 +783,6 @@ void cCMDImageRead::SetHelp(void)
   switch(Current())
   {
     case 1:
-    case 2:
       cOsdMenu::SetHelp(tr("Read in"), NULL, NULL, tr("Select"));
       break;
     default:
@@ -795,14 +805,8 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
         SetHelp();
         return osContinue;
       case kRight:
-        switch(Current())
-        {
-          case 1:
-          case 2:
+        if(Current() == 1) {
             return osContinue;
-            break;
-          default:
-            break;
         }
         break;
       case kRed:
@@ -811,7 +815,7 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
           OsdMsg(mtError,tr("Invalid file name for DVD-Image"));
           return osContinue;
         }
-        if(ImgType < 0)
+        if(ImgType < 0 || ImgType >= ImageList.Count())
         {
           OsdMsg(mtError,tr("No type of image selected"));
           return osContinue;
@@ -849,16 +853,8 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
           }
         break;
       case kBlue:
-        switch(Current())
-        {
-          case 1:
+        if(Current() == 1) {
             return AddSubMenu(new cCMDDir(ImageList, NULL, true, &Dir[0]));
-            break;
-          case 2:
-            return AddSubMenu(new cMenuSetupDSITypes(ImageList, true, &ImgType, &ImgTypeTxt[0]));
-            break;
-          default:
-            break;
         }
         break;
       default:

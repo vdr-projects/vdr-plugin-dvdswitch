@@ -211,8 +211,7 @@ void cMenuSetupDVDSwitch::Set(void)
     if(!data.ImageDirPerParam)
       Add(new cMenuEditStrItem(tr("\tImage Dir."),
           data.ImageDir,
-          memberof(data.ImageDir),
-          "abcdefghijklmnopqrstuvwxyz0123456789-.#~/"));
+          memberof(data.ImageDir)));
     Add(new cOsdItem(tr("\tType of images")));
     Add(new cMenuEditBoolItem(tr("\tView free disk space"), &data.ViewFreeDiskSpace));
     Add(new cOsdItem("------------------------------------------------------------------------------------------"));
@@ -491,8 +490,7 @@ cMenuEditCatItem::cMenuEditCatItem(const char *name, bool view)
   else
     strncpy(Name, "+\t", 119);
   strncat(Name, name, 119);
-  //strncat(Name, " ", memberof(Name));
-  //StrRepeat("_", (119 - strlen(Name)), Name);
+
   SetText(Name);
 }
 

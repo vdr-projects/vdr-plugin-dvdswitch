@@ -54,12 +54,6 @@ void ChangeChars(char *name, char *chars)
   }
 }
 
-void StrRepeat(const char *input, int count, char *dest)
-{
-  for(int i = 0; i < count; i++)
-    strcat(dest, input);
-}
-
 bool RegIMatch(const char *string, const char *pattern)
 {
   if(!string || !pattern)

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-dvdswitch-plugin 0.1.7\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2011-01-12 20:59+0100\n"
+"POT-Creation-Date: 2011-01-19 19:02+0100\n"
 "PO-Revision-Date: 2010-12-21 12:59+0100\n"
 "Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -82,17 +82,11 @@ msgstr "Le dossier n'est pas vide. L'effacer quand même?"
 msgid "Missing rights to create directory!"
 msgstr "pas d'autorisation de création"
 
-msgid " abcdefghijklmnopqrstuvwxyz0123456789-.#~"
-msgstr " aàbcçdeéèfghijklmnopqrstuvwxyz0123456789-.#~"
-
 msgid "Directory exists"
 msgstr "Le dossier existe déjà"
 
 msgid "Missing rights to rename!"
 msgstr "pas d'autorisation d'écriture"
-
-msgid " abcdefghijklmnopqrstuvwxyz0123456789-_.#~"
-msgstr ""
 
 msgid "Insert"
 msgstr "Introduire"
@@ -201,6 +195,9 @@ msgstr "\tCache le menu"
 
 msgid "\t  Name"
 msgstr "\t  Nom"
+
+msgid " abcdefghijklmnopqrstuvwxyz0123456789-.#~"
+msgstr " aàbcçdeéèfghijklmnopqrstuvwxyz0123456789-.#~"
 
 msgid "\tImage Dir."
 msgstr "\tDossier image"
@@ -399,4 +396,3 @@ msgstr ""
 
 msgid "No rights to move image"
 msgstr "pas d'autorisation de création"
-

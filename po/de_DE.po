@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-dvdswitch-plugin 0.1.7\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2011-01-12 20:59+0100\n"
+"POT-Creation-Date: 2011-01-19 19:02+0100\n"
 "PO-Revision-Date: 2009-10-03 14:03+0200\n"
 "Last-Translator:\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -77,17 +77,11 @@ msgstr "Verzeichnis ist nicht leer! Dennoch löschen?"
 msgid "Missing rights to create directory!"
 msgstr "Keine Berechtigung zum erstellen des Verzeichnis!"
 
-msgid " abcdefghijklmnopqrstuvwxyz0123456789-.#~"
-msgstr " abcdefghijklmnopqrstuvwxyzäöüß0123456789-.#~"
-
 msgid "Directory exists"
 msgstr "Verzeichnis existiert bereits"
 
 msgid "Missing rights to rename!"
 msgstr "Keine Berechtigung zum umbennen!"
-
-msgid " abcdefghijklmnopqrstuvwxyz0123456789-_.#~"
-msgstr " abcdefghijklmnopqrstuvwxyzäöüß0123456789-_.#~"
 
 msgid "Insert"
 msgstr "Einfügen"
@@ -196,6 +190,9 @@ msgstr "\tVerstecke Hauptmenüeintrag"
 
 msgid "\t  Name"
 msgstr "\t  Name"
+
+msgid " abcdefghijklmnopqrstuvwxyz0123456789-.#~"
+msgstr " abcdefghijklmnopqrstuvwxyzäöüß0123456789-.#~"
 
 msgid "\tImage Dir."
 msgstr "\tImage Verz."
@@ -395,3 +392,5 @@ msgstr "Operation fehlgeschlagen"
 msgid "No rights to move image"
 msgstr "Keine Berechtigung zum Verschieben des Images"
 
+#~ msgid " abcdefghijklmnopqrstuvwxyz0123456789-_.#~"
+#~ msgstr " abcdefghijklmnopqrstuvwxyzäöüß0123456789-_.#~"
