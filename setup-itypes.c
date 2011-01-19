@@ -169,17 +169,17 @@ void cMenuSetupDSITypesItem::Set(void)
 
   Add(new cMenuEditStrItem(tr("Description"),
       LongName,
-      50,
-      " abcdefghijklmnopqrstuvwxyz0123456789-.#~'/()[]"));
+      memberof(LongName),
+      tr(" abcdefghijklmnopqrstuvwxyz0123456789-.#~")));
   Add(new cMenuEditStrItem(tr("Type title"),
       ShortName,
-      20,
-      " abcdefghijklmnopqrstuvwxyz0123456789-.#~'/()[]"));
-  Add(new cMenuEditStraItem(tr("Image type"), &FileType, 2, FileTypes));
+      memberof(ShortName),
+      tr(" abcdefghijklmnopqrstuvwxyz0123456789-.#~")));
+  Add(new cMenuEditStraItem(tr("Image type"), &FileType, memberof(FileTypes), FileTypes));
   Add(new cMenuEditStrItem(!FileType ? tr("Directory contains") : tr("File extension"),
       Extension,
-      20,
-      "abcdefghijklmnopqrstuvwxyz0123456789-_.#~"));
+      memberof(Extension),
+      tr(" abcdefghijklmnopqrstuvwxyz0123456789-.#~")));
   if(FileType)
     Add(new cMenuEditBoolItem(tr("Hide extension"), &HideExtension));
 

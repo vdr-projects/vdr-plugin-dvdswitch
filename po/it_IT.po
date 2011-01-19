@@ -395,5 +395,3 @@ msgstr "Operazione fallita"
 msgid "No rights to move image"
 msgstr "Nessun permesso per spostare immagine"
 
-#~ msgid " abcdefghijklmnopqrstuvwxyz0123456789-_.#~"
-#~ msgstr "áàbcdeéèfghiìîjklmnoòpqrstuùvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&°"
