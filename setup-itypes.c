@@ -89,7 +89,7 @@ eOSState cMenuSetupDSITypes::ProcessKey(eKeys Key)
         item = ImageList.Get(Current());
         if(Select && item)
         {
-          strn0cpy((char*)Buffer, item->GetLName(), MaxFileName);
+          strn0cpy(Buffer, item->GetLName(), memberof(Buffer));
           *RetIndex = item->Index();
           return osBack;
         }
@@ -99,7 +99,7 @@ eOSState cMenuSetupDSITypes::ProcessKey(eKeys Key)
         item = ImageList.Get(Current());
         if(Select && item)
         {
-          strn0cpy((char*)Buffer, item->GetLName(), MaxFileName);
+          strn0cpy(Buffer, item->GetLName(), memberof(Buffer));
           *RetIndex = item->Index();
           return osBack;
         }

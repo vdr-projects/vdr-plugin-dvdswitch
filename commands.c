@@ -319,7 +319,7 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
                     seldir++;
                   if(seldir[0] == '/')
                     seldir++;
-                  strn0cpy((char*)Buffer, seldir, MaxFileName);
+                  strn0cpy(Buffer, seldir, memberof(Buffer));
                   cRemote::Put(kBack);
                 }
                 DELETENULL(info);
