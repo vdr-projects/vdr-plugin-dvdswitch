@@ -3,10 +3,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: vdr-dvdswitch-plugin 0.1.7\n"
+"Project-Id-Version: vdr-dvdswitch-plugin 0.2.1\n"
 "Report-Msgid-Bugs-To: <see README>\n"
 "POT-Creation-Date: 2011-02-13 16:14+0100\n"
-"PO-Revision-Date: 2010-12-30 17:54+0100\n"
+"PO-Revision-Date: 2011-03-05 15:31+0100\n"
 "Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
 "Language-Team:  <vdr@linuxtv.org>\n"
 "Language: \n"
@@ -108,7 +108,7 @@ msgid "Can't execute Readscript!"
 msgstr "Impossibile eseguire script lettura!"
 
 msgid "Can't query name of volume!"
-msgstr ""
+msgstr "Impossibile rilevare il nome del volume!"
 
 msgid "Name"
 msgstr "Nome"
