@@ -206,8 +206,7 @@ void cMenuSetupDVDSwitch::Set(void)
     if (!data.HideMenuEntry)
       Add(new cMenuEditStrItem(tr("\t  Name"),
           data.MenuName,
-          memberof(data.MenuName),
-          tr(" abcdefghijklmnopqrstuvwxyz0123456789-.#~")));
+          memberof(data.MenuName)));
     if(!data.ImageDirPerParam)
       Add(new cMenuEditStrItem(tr("\tImage Dir."),
           data.ImageDir,
@@ -261,8 +260,7 @@ void cMenuSetupDVDSwitch::Set(void)
     Add(new cMenuEditBoolItem(tr("\tvisible Image-Size Col"), &data.HideImgSizeCol));
     Add(new cMenuEditStrItem(tr("\tchange Character"),
         data.ChangeCharsOSDName,
-        20,
-        " abcdefghijklmnopqrstuvwxyz0123456789-_+*&.#~%$"));
+        memberof(data.ChangeCharsOSDName)));
     if(data.DisplayMode == 1)
     {
       //if(data.CategorieType == 0)
@@ -273,9 +271,9 @@ void cMenuSetupDVDSwitch::Set(void)
       Add(new cMenuEditIntItem(tr("\t  Count before Cat.Name"), &data.CharCountBeforeCat, 0, 30));
       Add(new cMenuEditBoolItem(tr("\tSpaces before/after Cat.Name"), &data.SpacesBeforeAfterCat));
       if(data.CategorieType == 1)
-        Add(new cMenuEditStrItem(tr("\tCutText for Subcat"),
+        Add(new cMenuEditStrItem(tr("\tSeparator for Subcat"),
             data.SubCatCutter,
-            6,
+            memberof(data.SubCatCutter),
             "-_.:#+*!%<>"));
     }
     Add(new cOsdItem("------------------------------------------------------------------------------------------"));

@@ -18,7 +18,7 @@
 #error "VDR-1.6.0 API version or greater is required!"
 #endif
 
-static const char *VERSION        = "0.1.7";
+static const char *VERSION        = "0.2.0";
 
 class cPluginDvdswitch : public cPlugin {
 private:
@@ -148,7 +148,7 @@ cString cPluginDvdswitch::SVDRPCommand(const char *Command, const char *Option, 
 
 bool cPluginDvdswitch::CheckError(void)
 {
-  dsyslog("dvdswitch: Check ImageDir");
+  dsyslog("dvdswitch: Check Image Directory");
   if(!DirectoryOk(DVDSwitchSetup.ImageDir))
   {
     esyslog("dvdswitch: Image Directory '%s' not readable", DVDSwitchSetup.ImageDir);

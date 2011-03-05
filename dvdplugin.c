@@ -100,13 +100,14 @@ void cDVDPlugin::DetectDevice(void)
 
         cTokenizer *token = new cTokenizer(output, " ");
         for(int i = 0; i <= token->Count(); i++) {
-            if(RegIMatch(token->GetToken(i), "^-C$") &&
-               token->GetToken(i + 1)) {
+            const char* t = token->GetToken(i);
+            if(t && 0 == strcmp(t, "-C")
+                 && token->GetToken(i + 1)) {
               dvd = strdup(token->GetToken(i + 1));
               break;
             }
-            if(RegIMatch(token->GetToken(i), "^--dvd=")) {
-              const char *p = strchr(token->GetToken(i), '=');
+            else if(t && 0 == strncmp(t, "--dvd=", 6)) {
+              const char *p = strchr(t, '=');
               dvd = strdup(p + 1);
               break;
             }

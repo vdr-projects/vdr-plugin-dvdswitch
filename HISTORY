@@ -1,6 +1,19 @@
 VDR Plugin 'dvdswitch' Revision History
 ---------------------------------------
 
+2011-03-05: Version 0.2.0
+- Read name of volume to prefill OSD-Entry with filename
+  Fill OSD-field with capitalize volume name
+- Improve menu to read images
+- Rename image was'nt possible
+- used posix functions to parse commandline, create symbolic links, parse mountpoint
+- Improve handle of error messages
+- Update translations
+  Add italian translation (Support #490)
+- refactoring MenuSetup 
+  Allow localized character at title of image menu
+- remove some unused code, typecast ...
+
 2010-12-22: Version 0.1.6
 - Add french translation from http://www.vdr-portal.de/board/thread.php?postid=488211#post488211
 - Fix some GCC warnings (asprintf, realpath)
