@@ -149,7 +149,7 @@ cString cPluginDvdswitch::SVDRPCommand(const char *Command, const char *Option, 
 bool cPluginDvdswitch::CheckError(void)
 {
   dsyslog("dvdswitch: Check Image Directory");
-  if(!DirectoryOk(DVDSwitchSetup.ImageDir))
+  if (access(DVDSwitchSetup.ImageDir, R_OK | X_OK) != 0)
   {
     esyslog("dvdswitch: Image Directory '%s' not readable", DVDSwitchSetup.ImageDir);
     OsdMsg(mtError,tr("Image Directory not readable or not exist"));
