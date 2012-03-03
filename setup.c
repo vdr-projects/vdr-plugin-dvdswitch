@@ -340,7 +340,7 @@ eOSState cMenuSetupDVDSwitch::ProcessKey(eKeys Key)
   {
     const char *ItemText = Get(Current())->Text();
     
-    switch(Key)
+    switch(Key & ~k_Repeat)
     {
       case kRight:
       case kLeft:
@@ -406,9 +406,7 @@ eOSState cMenuSetupDVDSwitch::ProcessKey(eKeys Key)
         }
         break;
       case kUp:
-      case kUp|k_Repeat:
       case kDown:
-      case kDown|k_Repeat:
         state = cMenuSetupPage::ProcessKey(Key);
         ItemText = Get(Current())->Text();
         

@@ -243,12 +243,10 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
     {
       case csNone:
         mItem = (cMainMenuItem*)Get(Current());
-        switch(Key)
+        switch(Key & ~k_Repeat)
         {
           case kUp:
-          case kUp|k_Repeat:
           case kDown:
-          case kDown|k_Repeat:
             cOsdMenu::ProcessKey(Key);
             SetHelp();
             mItem = (cMainMenuItem*)Get(Current());
@@ -580,12 +578,10 @@ eOSState cCMDMove::ProcessKey(eKeys Key)
   cDirHandling *DirHand = NULL;
   cFileMoveThread *move = NULL;
 
-  switch(Key)
+  switch(Key & ~k_Repeat)
   {
     case kUp:
-    case kUp|k_Repeat:
     case kDown:
-    case kDown|k_Repeat:
       cOsdMenu::ProcessKey(Key);
       SetHelp();
       mItem = (cMainMenuItem*)Get(Current());
@@ -795,12 +791,10 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
 {
   if(!HasSubMenu())
   {
-    switch(Key)
+    switch(Key & ~k_Repeat)
     {
       case kUp:
-      case kUp|k_Repeat:
       case kDown:
-      case kDown|k_Repeat:
         cOsdMenu::ProcessKey(Key);
         SetHelp();
         return osContinue;

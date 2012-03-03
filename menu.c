@@ -556,16 +556,12 @@ eOSState cMainMenu::ProcessKey(eKeys Key)
         }
         break;
       default:
-        switch(Key)
+        switch(Key & ~k_Repeat)
         {
           case kUp:
-          case kUp|k_Repeat:
           case kDown:
-          case kDown|k_Repeat:
           case kRight:
-          case kRight|k_Repeat:
           case kLeft:
-          case kLeft|k_Repeat:
             return MenuMove(Key);
             break;
           case k1:
@@ -602,12 +598,10 @@ eOSState cMainMenu::MenuMove(eKeys Key)
 
   if(DVDSwitchSetup.DisplayMode == 1)
   {
-    switch(Key)
+    switch(Key & ~k_Repeat)
     {
       case kDown:
-      case kDown|k_Repeat:
       case kUp:
-      case kUp|k_Repeat:
         state = cOsdMenu::ProcessKey(Key);
         if(Count() &&
            Current() == FirstSelectable)
@@ -619,7 +613,6 @@ eOSState cMainMenu::MenuMove(eKeys Key)
         }
         break;
       case kLeft:
-      case kLeft|k_Repeat:
         if(Count() &&
           DVDSwitchSetup.JumpCatByKey)
         {
@@ -685,7 +678,6 @@ eOSState cMainMenu::MenuMove(eKeys Key)
         }
         break;
       case kRight:
-      case kRight|k_Repeat:
         if(Count() &&
            DVDSwitchSetup.JumpCatByKey)
         {
