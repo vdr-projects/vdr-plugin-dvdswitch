@@ -787,7 +787,6 @@ eOSState cMainMenu::SelectItem(void)
 
 eOSState cMainMenu::Commands(eKeys Key)
 {
-  eOSState state = osUnknown;
   cMainMenuItem *mItem = (cMainMenuItem*)Get(Current());
   eCMDs cmd = cmdNone;
   cCMDImage *CMDImage = NULL;
@@ -873,7 +872,7 @@ eOSState cMainMenu::Commands(eKeys Key)
         if(mItem && mItem->Type() == iDVD)
         {
           CMDImage = new cCMDImage(this);
-          state = CMDImage->Delete(mItem->FileName());
+          CMDImage->Delete(mItem->FileName());
           DELETENULL(CMDImage);
           return osContinue;
         }
@@ -882,7 +881,7 @@ eOSState cMainMenu::Commands(eKeys Key)
         if(mItem && mItem->Type() == iDVD)
         {
           CMDImage = new cCMDImage(this);
-          state = CMDImage->Burn(mItem->FileName());
+          CMDImage->Burn(mItem->FileName());
           DELETENULL(CMDImage);
           return osContinue;
         }
