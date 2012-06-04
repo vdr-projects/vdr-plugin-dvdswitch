@@ -27,7 +27,7 @@ class cDVDPlugin
       cFileCMD::Del(DVDSwitchSetup.DVDLink);
     };
   public:
-    static void Start(char *image = NULL);
+    static void Start(const char *image = NULL);
     static void Exit(void);
     static void ChangeLink(const char *target, const char *link);
     static void Init(void)

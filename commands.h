@@ -35,7 +35,7 @@ enum eCMDState
 class cCMD
 {
   public:
-    static eOSState Play(cMainMenuItem *item = NULL);
+    static eOSState Play(const cMainMenuItem *item = NULL);
     static eOSState Eject(bool close = false);
 };
 
@@ -43,11 +43,11 @@ class cCMD
 class cCMDMenu : public cOsdMenu
 {
   private:
-    cMainMenuItem *iItem;
+    const cMainMenuItem *iItem;
     cMainMenu *OsdObject;
     cImageList &ImageList;
   public:
-    cCMDMenu(cImageList &ImageList, cMainMenuItem *item, cMainMenu *osdobject);
+    cCMDMenu(cImageList &ImageList, const cMainMenuItem *item, cMainMenu *osdobject);
     virtual eOSState ProcessKey(eKeys Key);
 };
 

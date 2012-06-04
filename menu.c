@@ -787,7 +787,7 @@ eOSState cMainMenu::SelectItem(void)
 
 eOSState cMainMenu::Commands(eKeys Key)
 {
-  cMainMenuItem *mItem = (cMainMenuItem*)Get(Current());
+  const cMainMenuItem *mItem = (const cMainMenuItem*)Get(Current());
   eCMDs cmd = cmdNone;
   cCMDImage *CMDImage = NULL;
 

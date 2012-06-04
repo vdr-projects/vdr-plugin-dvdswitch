@@ -148,7 +148,7 @@ void cDVDPlugin::SetLink(void)
   }
 }
 
-void cDVDPlugin::Start(char *image)
+void cDVDPlugin::Start(const char *image)
 {
   if(!thread)
   {

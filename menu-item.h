@@ -23,8 +23,8 @@ class cMainMenuItem : public cOsdItem
     cMainMenuItem(eMainMenuItem itype, cImageList &ImageList, const char *file = NULL);
     ~cMainMenuItem(void);
 
-    eMainMenuItem Type(void) { return iType; };
-    char* FileName(void) { return File; };
+    eMainMenuItem Type(void) const { return iType; };
+    const char* FileName(void) const { return File; };
 };
 
 #endif // __MENUITEM_DVDSWITCH_H

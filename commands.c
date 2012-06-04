@@ -11,7 +11,7 @@
 #include "volname.h"
 // --- cCMD ----------------------------------------------------------
 
-eOSState cCMD::Play(cMainMenuItem *item)
+eOSState cCMD::Play(const cMainMenuItem *item)
 {
   if(item)
     isyslog("dvdswitch: play %s, %i", item->FileName(), item->Type());
@@ -40,7 +40,7 @@ eOSState cCMD::Eject(bool close)
 
 // --- cCMDMenu -------------------------------------------------------------
 
-cCMDMenu::cCMDMenu(cImageList &imagelist, cMainMenuItem *item, cMainMenu *osdobject)
+cCMDMenu::cCMDMenu(cImageList &imagelist, const cMainMenuItem *item, cMainMenu *osdobject)
   : cOsdMenu(tr("Commands"))
   , ImageList(imagelist)
 {
@@ -312,7 +312,7 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
                 }
                 else
                 {
-                  char *seldir = mItem->FileName();
+                  const char *seldir = mItem->FileName();
                   for (unsigned int i = 0; i < strlen(DVDSwitchSetup.ImageDir); i++)
                     seldir++;
                   if(seldir[0] == '/')
