@@ -114,6 +114,9 @@ class cFileInfo
     struct stat64 Info;
     unsigned long long int size;
 
+  protected:
+    bool hasGroup(gid_t gid);
+
   public:
     cFileInfo(const char *file);
     ~cFileInfo(void);

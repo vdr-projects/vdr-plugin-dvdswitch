@@ -293,17 +293,40 @@ double cFileInfo::SizeGByte(int decimals)
   return size;
 }
 
-bool cFileInfo::isReadable(void)
-{
-  if(getuid() == 0)
+bool cFileInfo::hasGroup(gid_t gid) {
+
+  if(getegid() == gid)          // Is primary group member
     return true;
 
-  if(Info.st_uid == getuid() &&
+  int gct;			            // number of secondary groups
+  int n;                        // loop count
+  gid_t gidlist[NGROUPS_MAX];	// GIDs of secondary groups
+  if ((gct = getgroups(NGROUPS_MAX, gidlist)) < 0) {
+    char* err = get_strerror(errno);
+    esyslog("dvdswitch: could getgroups for %s :%s", File, err ? err : "");
+    if(err) free(err);
+    return false;
+  }
+
+  for(n = 0; n < gct; n++)
+    if(gidlist[n] == gid)
+      return true;
+
+  return false;
+}
+
+bool cFileInfo::isReadable(void)
+{
+  uid_t uid = geteuid();
+  if(uid == 0)
+    return true;
+
+  if(Info.st_uid == uid &&
      Info.st_mode & S_IRUSR)
     return true;
 
-  if(Info.st_gid == getgid() &&
-     Info.st_mode & S_IRGRP)
+  if(Info.st_mode & S_IRGRP 
+        && hasGroup(Info.st_gid))
     return true;
 
   if(Info.st_mode & S_IROTH)
@@ -314,15 +337,16 @@ bool cFileInfo::isReadable(void)
 
 bool cFileInfo::isWriteable(void)
 {
-  if(getuid() == 0)
+  uid_t uid = geteuid();
+  if(uid == 0)
     return true;
 
-  if(Info.st_uid == getuid() &&
+  if(Info.st_uid == uid &&
      Info.st_mode & S_IWUSR)
     return true;
 
-  if(Info.st_gid == getgid() &&
-     Info.st_mode & S_IWGRP)
+  if(Info.st_mode & S_IWGRP
+        && hasGroup(Info.st_gid))
     return true;
 
   if(Info.st_mode & S_IWOTH)
@@ -333,18 +357,19 @@ bool cFileInfo::isWriteable(void)
 
 bool cFileInfo::isExecutable(void)
 {
-  if(getuid() == 0 &&
+  uid_t uid = geteuid();
+  if(uid == 0 &&
      (Info.st_mode & S_IXUSR ||
       Info.st_mode & S_IXGRP ||
       Info.st_mode & S_IXOTH))
     return true;
 
-  if(Info.st_uid == getuid() &&
+  if(Info.st_uid == uid &&
      Info.st_mode & S_IXUSR)
     return true;
 
-  if(Info.st_gid == getgid() &&
-     Info.st_mode & S_IXGRP)
+  if(Info.st_mode & S_IXGRP
+        && hasGroup(Info.st_gid))
     return true;
 
   if(Info.st_mode & S_IXOTH)
