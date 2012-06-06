@@ -255,20 +255,22 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
             return osContinue;
             break;
           case kOk:
-            info = new cFileInfo(mItem->FileName());
-            if(!info->isExecutable() || !info->isReadable())
-            {
-              esyslog("dvdswitch: Can't access to directory!");
-              DELETENULL(info);
-              OsdMsg(mtError,tr("No rights to access this directory!"));
-              return osContinue;
-              break;
+            if(mItem) {
+                info = new cFileInfo(mItem->FileName());
+                if(!info->isExecutable() || !info->isReadable())
+                {
+                  esyslog("dvdswitch: Can't access to directory!");
+                  DELETENULL(info);
+                  OsdMsg(mtError,tr("No rights to access this directory!"));
+                  return osContinue;
+                  break;
+                }
+                DELETENULL(info);
+                DirHand = new cDirHandling(this, this);
+                DirHand->ProcessKey(mItem);
+                delete(DirHand);
+                Build();
             }
-            DELETENULL(info);
-            DirHand = new cDirHandling(this, this);
-            DirHand->ProcessKey(mItem);
-            delete(DirHand);
-            Build();
             break;
           case kRed:
             if(mItem->Type() == iDir)
@@ -430,6 +432,7 @@ eOSState cCMDDir::New(eKeys Key)
 
   return cOsdMenu::ProcessKey(Key);
 }
+
 
 eOSState cCMDDir::Edit(cMainMenuItem *mItem)
 {
