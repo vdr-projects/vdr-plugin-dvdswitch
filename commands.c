@@ -167,7 +167,7 @@ eOSState cCMDMenu::ProcessKey(eKeys Key)
 
 // --- cCMDDir ------------------------------------------------------------
 
-cCMDDir::cCMDDir(cImageList &imagelist, cMainMenu *osdobject, bool select, char *buffer)
+cCMDDir::cCMDDir(cImageList &imagelist, cMainMenu *osdobject, bool select, char *lastdir)
   : cOsdMenu(tr("Directory Management"))
   , ImageList(imagelist)
 {
@@ -178,7 +178,7 @@ cCMDDir::cCMDDir(cImageList &imagelist, cMainMenu *osdobject, bool select, char 
   State = csNone;
   OsdObject = osdobject;
   Select = select;
-  Buffer = buffer;
+  LastDir = lastdir;
   SetDir();
 
   if(Select)
@@ -211,7 +211,7 @@ void cCMDDir::SetHelp(void)
   }
 }
 
-void cCMDDir::Build(char *dir)
+void cCMDDir::Build(const char *dir)
 {
   if(!dir)
     dir = CurrentDir();
@@ -319,7 +319,8 @@ eOSState cCMDDir::ProcessKey(eKeys Key)
                     seldir++;
                   if(seldir[0] == '/')
                     seldir++;
-                  strn0cpy(Buffer, seldir, memberof(Buffer));
+                  if(LastDir)
+                      strn0cpy(LastDir, seldir, memberof(Dir));
                   cRemote::Put(kBack);
                 }
                 DELETENULL(info);
@@ -546,7 +547,7 @@ void cCMDMove::SetHelp(void)
   cOsdMenu::SetHelp(NULL, NULL, NULL , tr("Insert"));
 }
 
-void cCMDMove::Build(char *dir)
+void cCMDMove::Build(const char *dir)
 {
   if(!dir)
     dir = CurrentDir();

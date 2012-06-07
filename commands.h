@@ -58,11 +58,11 @@ class cCMDDir : public cOsdMenu, private cDirHandlingOpt
     char Dir[MaxFileName];
     cMainMenu *OsdObject;
     bool Select;
-    char *Buffer;
+    char *LastDir;
     cImageList &ImageList;
 
-    void Build(char *dir = NULL);
-    void SetDir(char *value = NULL)
+    void Build(const char *dir = NULL);
+    void SetDir(const char *value = NULL)
     {
       if(value)
         strn0cpy(Dir, value, MaxFileName);
@@ -75,7 +75,7 @@ class cCMDDir : public cOsdMenu, private cDirHandlingOpt
     eOSState Edit(cMainMenuItem *mItem);
     eOSState Edit(eKeys Key);
   public:
-    cCMDDir(cImageList &ImageList, cMainMenu *osdobject = NULL, bool select = false, char *buffer = NULL);
+    cCMDDir(cImageList &ImageList, cMainMenu *osdobject = NULL, bool select = false, char *lastdir = NULL);
 
     virtual eOSState ProcessKey(eKeys Key);
     void SetHelp(void);
@@ -90,7 +90,7 @@ class cCMDMove : public cOsdMenu, private cDirHandlingOpt
     bool Direct;
     cImageList &ImageList;
 
-    void Build(char *dir = NULL);
+    void Build(const char *dir = NULL);
   public:
     cCMDMove(cImageList &ImageList, const char *file, cMainMenu *osdobject, bool dir = true, bool direct = false);
     ~cCMDMove(void) { free(File); }
