@@ -222,20 +222,23 @@ void cMenuSetupDVDSwitch::Set(void)
   ViewDisplayPos = Count() - 1;
   if(ViewDisplay)
   {
-    static const char *DModes[3];
-    DModes[0] = tr("All Images");
-    DModes[1] = tr("All with Cat.");
-    DModes[2] = tr("Directories");
+    static const char *DModes[3] = {
+        tr("All Images"),
+        tr("All with Cat."),
+        tr("Directories")
+    };
 
-    static const char *CTypes[3];
-    CTypes[0] = tr("Image type");
-    CTypes[1] = tr("Directories");
-    CTypes[2] = tr("File type");
+    static const char *CTypes[3] = {
+        tr("Image type"),
+        tr("Directories"),
+        tr("File type")
+    };
 
-    static const char *SModes[3];
-    SModes[0] = tr("none");
-    SModes[1] = tr("ascending");
-    SModes[2] = tr("descending");
+    static const char *SModes[3] = {
+        tr("none"),
+        tr("ascending"),
+        tr("descending")
+    };
 
     Add(new cMenuEditStraItem(tr("\tDisplay mode"), &data.DisplayMode, memberof(DModes), DModes));
 
@@ -298,18 +301,19 @@ void cMenuSetupDVDSwitch::Set(void)
   ViewKeyPos = Count() - 1;
   if(ViewKey)
   {
-    static const char *Commands[10];
-    Commands[0] = tr("None function");
-    Commands[1] = tr("Dir. Management");
-    Commands[2] = tr("Tray open");
-    Commands[3] = tr("Tray close");
-    Commands[4] = tr("Play");
-    Commands[5] = tr("Image rename");
-    Commands[6] = tr("Image move");
-    Commands[7] = tr("Image delete");
-    Commands[8] = tr("Image burn");
-    Commands[9] = tr("Image create");
-    Commands[10] = tr("Commands");
+    static const char *Commands[memberof(cDVDSwitchSetup::CommandsShortName)] = {
+        tr("None function"),
+        tr("Dir. Management"),
+        tr("Tray open"),
+        tr("Tray close"),
+        tr("Play"),
+        tr("Image rename"),
+        tr("Image move"),
+        tr("Image delete"),
+        tr("Image burn"),
+        tr("Image create"),
+        tr("Commands")
+    };
 
     Add(new cMenuEditStraItem(tr("\tKey 1"), &data.k1, memberof(Commands), Commands));
     Add(new cMenuEditStraItem(tr("\tKey 2"), &data.k2, memberof(Commands), Commands));

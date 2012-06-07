@@ -39,7 +39,7 @@ class cDVDSwitchSetup
     char DVDReadScript[MaxFileName];
     char DVDWriteScript[MaxFileName];
 
-    const char *CommandsShortName[10];
+    const char *CommandsShortName[11];
     int k1;
     int k2;
     int k3;
