@@ -301,7 +301,7 @@ void cMenuSetupDVDSwitch::Set(void)
   ViewKeyPos = Count() - 1;
   if(ViewKey)
   {
-    static const char *Commands[memberof(cDVDSwitchSetup::CommandsShortName)] = {
+    static const char *Commands[memberof(DVDSwitchSetup.CommandsShortName)] = {
         tr("None function"),
         tr("Dir. Management"),
         tr("Tray open"),
