@@ -18,7 +18,7 @@
 #error "VDR-1.6.0 API version or greater is required!"
 #endif
 
-static const char *VERSION        = "0.2.0";
+static const char *VERSION        = "0.2.1";
 
 class cPluginDvdswitch : public cPlugin {
 private:
