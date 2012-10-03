@@ -1,5 +1,13 @@
 VDR Plugin 'dvdswitch' Revision History
 ---------------------------------------
+2012-10-03: Version 0.2.1
+- Create image - show wrong selected sub folder
+- Can't assign keymappping with 'Commands' (Closes: #1015)
+- Add missing check for secondary groupids (Closes: #1012)
+- Fix: menu.c:790:12: warning: variable ‘state’ set but not used
+- Fix warning: case value ‘x’ not in enumerated type ‘eKeys’ [-Wswitch]
+- Allow a read-only image directory [Bug #620]
+- Update italian translation (Support #593)
 
 2011-03-05: Version 0.2.0
 - Read name of volume to prefill OSD-Entry with filename
