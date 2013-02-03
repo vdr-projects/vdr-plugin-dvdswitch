@@ -60,6 +60,15 @@ how to anonymously get the current source
 
 git clone git://projects.vdr-developer.org/vdr-plugin-dvdswitch.git dvdswitch
 
+
+
+
+Git-Repository (read/write): 
+-----------------------------------------
+You need a account write privilege on vdr-developer.org
+
+git clone gitosis@projects.vdr-developer.org:vdr-plugin-dvdswitch.git dvdswitch
+
 how to make a new release
 -------------------------
 
