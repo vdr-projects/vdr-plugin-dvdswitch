@@ -867,7 +867,9 @@ eOSState cMainMenu::Commands(eKeys Key)
         }
         break;
       case cmdImgMove:
-        return AddSubMenu(new cCMDMove(ImageList, mItem->FileName(), this, false, true));
+        if(mItem) {
+          return AddSubMenu(new cCMDMove(ImageList, mItem->FileName(), this, false, true));
+        }
         break;
       case cmdImgDelete:
         if(mItem && mItem->Type() == iDVD)
