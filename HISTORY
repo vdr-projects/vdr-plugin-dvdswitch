@@ -1,5 +1,8 @@
 VDR Plugin 'dvdswitch' Revision History
 ---------------------------------------
+
+- Fix: Crash when image directory is empty, Patch from Matthias Schwarzott (#1308)
+
 2012-10-03: Version 0.2.1
 - Create image - show wrong selected sub folder
 - Can't assign keymappping with 'Commands' (Closes: #1015)

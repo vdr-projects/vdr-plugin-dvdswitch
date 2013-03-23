@@ -740,9 +740,10 @@ eOSState cMainMenu::MenuMove(eKeys Key)
   SetHelp();
 
   mItem = (cMainMenuItem*)Get(Current());
-  MainMenuOptions.setLastSelectItemName(mItem->FileName());
-  MainMenuOptions.LastSelectItemType(mItem->Type());
-
+  if(mItem) {
+    MainMenuOptions.setLastSelectItemName(mItem->FileName());
+    MainMenuOptions.LastSelectItemType(mItem->Type());
+  }
   return state;
 }
 
