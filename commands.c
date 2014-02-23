@@ -394,10 +394,11 @@ eOSState cCMDDir::New(void)
 
 eOSState cCMDDir::New(eKeys Key)
 {
+  eOSState state = cOsdMenu::ProcessKey(Key);
   switch(Key)
   {
     case kOk:
-      if(!isempty(Dir))
+      if(state == osUnknown && !isempty(Dir))
       {
         char *buffer = NULL;
         if(0 < asprintf(&buffer, "%s/%s", CurrentDir(), stripspace(Dir))) {
@@ -431,7 +432,7 @@ eOSState cCMDDir::New(eKeys Key)
       break;
   }
 
-  return cOsdMenu::ProcessKey(Key);
+  return state;
 }
 
 
@@ -484,10 +485,11 @@ eOSState cCMDDir::Edit(cMainMenuItem *mItem)
 
 eOSState cCMDDir::Edit(eKeys Key)
 {
+  eOSState state = cOsdMenu::ProcessKey(Key);
   switch(Key)
   {
     case kOk:
-      if(!isempty(Dir))
+      if(state == osUnknown && !isempty(Dir))
       {
         char *buffer = NULL;
         if(0 < asprintf(&buffer, "%s/%s", CurrentDir(), stripspace(Dir))) {
@@ -520,7 +522,7 @@ eOSState cCMDDir::Edit(eKeys Key)
       break;
   }
 
-  return cOsdMenu::ProcessKey(Key);
+  return state;
 }
 
 // --- cCMDMove -------------------------------------------------------------
@@ -793,13 +795,13 @@ void cCMDImageRead::SetHelp(void)
 
 eOSState cCMDImageRead::ProcessKey(eKeys Key)
 {
+  eOSState state = cOsdMenu::ProcessKey(Key);
   if(!HasSubMenu())
   {
     switch(Key & ~k_Repeat)
     {
       case kUp:
       case kDown:
-        cOsdMenu::ProcessKey(Key);
         SetHelp();
         return osContinue;
       case kRight:
@@ -860,7 +862,7 @@ eOSState cCMDImageRead::ProcessKey(eKeys Key)
     }
   }
 
-  return cOsdMenu::ProcessKey(Key);
+  return state;
 
 }
 
