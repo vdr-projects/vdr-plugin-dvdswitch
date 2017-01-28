@@ -70,7 +70,7 @@ class cToken : public cListObject
       String = string ? strdup(string) : NULL;
     }
     ~cToken(void) { free(String); }
-    char *Value(void) { return String; }
+    const char *Value(void) const { return String; }
 };
 
 class cTokenizer : public cList<cToken>
