@@ -1,6 +1,7 @@
 VDR Plugin 'dvdswitch' Revision History
 ---------------------------------------
 
+2017-01-28: Version 0.2.3
 - Fix a GCC warning (to compile with -fpermissive)
 
 2013-03-23: Version 0.2.2
